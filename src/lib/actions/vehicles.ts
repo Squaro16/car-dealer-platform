@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { vehicles } from "@/lib/db/schema";
-import { eq, desc, and, count } from "drizzle-orm";
+import { eq, desc, asc, and, count, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { deleteImages } from "@/lib/storage";
@@ -12,10 +12,16 @@ export type GetVehiclesOptions = {
     search?: string;
     minPrice?: number;
     maxPrice?: number;
+    minYear?: number;
+    maxYear?: number;
+    minMileage?: number;
+    maxMileage?: number;
     make?: string;
+    bodyType?: string;
     status?: string;
     page?: number;
     limit?: number;
+    sort?: string;
 };
 
 export async function getVehicles(options: GetVehiclesOptions = {}) {
@@ -24,6 +30,7 @@ export async function getVehicles(options: GetVehiclesOptions = {}) {
     const page = options.page || 1;
     const limit = options.limit || 12;
     const offset = (page - 1) * limit;
+    const sort = options.sort || "created_at_desc";
 
     const conditions = [
         eq(vehicles.dealerId, user.dealerId) // Enforce multi-tenancy
@@ -33,12 +40,33 @@ export async function getVehicles(options: GetVehiclesOptions = {}) {
         conditions.push(eq(vehicles.make, options.make));
     }
 
+    if (options.bodyType && options.bodyType !== "all") {
+        conditions.push(eq(vehicles.bodyType, options.bodyType));
+    }
+
     if (options.status && options.status !== "all") {
         conditions.push(eq(vehicles.status, options.status as "in_stock" | "reserved" | "sold" | "hidden"));
     }
 
+    if (options.minYear) conditions.push(sql`${vehicles.year} >= ${options.minYear}`);
+    if (options.maxYear) conditions.push(sql`${vehicles.year} <= ${options.maxYear}`);
+    if (options.minMileage) conditions.push(sql`${vehicles.mileage} >= ${options.minMileage}`);
+    if (options.maxMileage) conditions.push(sql`${vehicles.mileage} <= ${options.maxMileage}`);
+
     // Build where clause
     const whereClause = and(...conditions);
+
+    // Sort mapping
+    let orderBy;
+    switch (sort) {
+        case "price_asc": orderBy = asc(vehicles.price); break;
+        case "price_desc": orderBy = desc(vehicles.price); break;
+        case "year_asc": orderBy = asc(vehicles.year); break;
+        case "year_desc": orderBy = desc(vehicles.year); break;
+        case "mileage_asc": orderBy = asc(vehicles.mileage); break;
+        case "mileage_desc": orderBy = desc(vehicles.mileage); break;
+        default: orderBy = desc(vehicles.createdAt);
+    }
 
     // Get total count
     const [countResult] = await db
@@ -54,7 +82,75 @@ export async function getVehicles(options: GetVehiclesOptions = {}) {
         .select()
         .from(vehicles)
         .where(whereClause)
-        .orderBy(desc(vehicles.createdAt))
+        .orderBy(orderBy)
+        .limit(limit)
+        .offset(offset);
+
+    return {
+        data,
+        metadata: {
+            totalCount,
+            totalPages,
+            currentPage: page,
+            limit
+        }
+    };
+}
+
+export async function getPublicVehicles(options: GetVehiclesOptions = {}) {
+    // Public access - no user check
+    const page = options.page || 1;
+    const limit = options.limit || 12;
+    const offset = (page - 1) * limit;
+    const sort = options.sort || "created_at_desc";
+
+    const conditions = [
+        eq(vehicles.status, "in_stock") // Only show in-stock vehicles publicly
+    ];
+
+    if (options.make && options.make !== "all") {
+        conditions.push(eq(vehicles.make, options.make));
+    }
+
+    if (options.bodyType && options.bodyType !== "all") {
+        conditions.push(eq(vehicles.bodyType, options.bodyType));
+    }
+
+    if (options.minYear) conditions.push(sql`${vehicles.year} >= ${options.minYear}`);
+    if (options.maxYear) conditions.push(sql`${vehicles.year} <= ${options.maxYear}`);
+    if (options.minMileage) conditions.push(sql`${vehicles.mileage} >= ${options.minMileage}`);
+    if (options.maxMileage) conditions.push(sql`${vehicles.mileage} <= ${options.maxMileage}`);
+
+    // Build where clause
+    const whereClause = and(...conditions);
+
+    // Sort mapping
+    let orderBy;
+    switch (sort) {
+        case "price_asc": orderBy = asc(vehicles.price); break;
+        case "price_desc": orderBy = desc(vehicles.price); break;
+        case "year_asc": orderBy = asc(vehicles.year); break;
+        case "year_desc": orderBy = desc(vehicles.year); break;
+        case "mileage_asc": orderBy = asc(vehicles.mileage); break;
+        case "mileage_desc": orderBy = desc(vehicles.mileage); break;
+        default: orderBy = desc(vehicles.createdAt);
+    }
+
+    // Get total count
+    const [countResult] = await db
+        .select({ count: count() })
+        .from(vehicles)
+        .where(whereClause);
+
+    const totalCount = countResult?.count ?? 0;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Get data
+    const data = await db
+        .select()
+        .from(vehicles)
+        .where(whereClause)
+        .orderBy(orderBy)
         .limit(limit)
         .offset(offset);
 
@@ -205,4 +301,37 @@ export async function updateVehicle(id: string, formData: FormData) {
     revalidatePath(`/dashboard/inventory/${id}`);
     revalidatePath(`/inventory/${id}`);
     redirect("/dashboard/inventory");
+}
+
+export async function getUniqueModels() {
+    // Return one vehicle per Make+Model+Year combination to serve as a Spec Sheet
+    // Ideally we would have a dedicated Models table, but for this dealer template we infer from inventory
+    const data = await db.select().from(vehicles)
+        .where(eq(vehicles.status, 'in_stock'))
+        .orderBy(desc(vehicles.year), desc(vehicles.price));
+
+    const uniqueMap = new Map();
+    data.forEach(car => {
+        // distinct by Make, Model, Year, Variant
+        const key = `${car.make}-${car.model}-${car.year}-${car.variant || ''}`;
+        if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, car);
+        }
+    });
+
+    return Array.from(uniqueMap.values());
+}
+
+export async function getInventoryStats() {
+    const stats = await db
+        .select({
+            brand: vehicles.make,
+            count: count(vehicles.id)
+        })
+        .from(vehicles)
+        .where(eq(vehicles.status, "in_stock"))
+        .groupBy(vehicles.make)
+        .orderBy(desc(count(vehicles.id)));
+
+    return stats;
 }

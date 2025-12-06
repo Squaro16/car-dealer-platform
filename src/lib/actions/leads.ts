@@ -93,3 +93,42 @@ export async function createLead(formData: FormData) {
 
     return { success: true };
 }
+
+import { dealers } from "@/lib/db/schema";
+
+interface SellRequestData {
+    year: number;
+    make: string;
+    model: string;
+    vin: string;
+    mileage: number;
+    condition: string;
+    price?: number | string;
+    name: string;
+    email: string;
+    phone: string;
+}
+
+export async function submitSellRequest(data: SellRequestData) {
+    // Public action
+    // Find default dealer (first one)
+    const dealerData = await db.select().from(dealers).limit(1);
+    const dealer = dealerData[0];
+
+    if (!dealer) throw new Error("No dealer found to submit request to.");
+
+    const message = `SELL REQUEST:\nVehicle: ${data.year} ${data.make} ${data.model}\nVIN: ${data.vin}\nMileage: ${data.mileage}\nCondition: ${data.condition}\nExpected Price: ${data.price || 'N/A'}`;
+
+    await db.insert(leads).values({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: message,
+        dealerId: dealer.id,
+        source: "website",
+        status: "new",
+        // No vehicleId as it's not in inventory yet
+    });
+
+    return { success: true };
+}

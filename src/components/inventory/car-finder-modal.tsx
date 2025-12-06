@@ -7,9 +7,17 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 
+import { usePathname } from "next/navigation";
+
 export function CarFinderModal() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [showPrompt, setShowPrompt] = useState(false);
+
+    // Hide on dashboard and login pages
+    if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/login")) {
+        return null;
+    }
 
     useEffect(() => {
         const handleScroll = () => {

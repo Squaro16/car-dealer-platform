@@ -29,18 +29,19 @@ export function PaginationControls({
     if (totalPages <= 1) return null;
 
     return (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex items-center justify-center gap-4 mt-16 border-t border-white/5 pt-8">
             <Button
                 variant="outline"
                 size="icon"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={!hasPrevPage}
+                className="bg-transparent border-white/10 text-white hover:bg-white/10 w-10 h-10"
             >
                 <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            <div className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
+            <div className="text-sm font-medium font-heading text-gray-400">
+                Page <span className="text-white font-bold">{currentPage}</span> of {totalPages}
             </div>
 
             <Button
@@ -48,6 +49,7 @@ export function PaginationControls({
                 size="icon"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={!hasNextPage}
+                className="bg-transparent border-white/10 text-white hover:bg-white/10 w-10 h-10"
             >
                 <ChevronRight className="h-4 w-4" />
             </Button>

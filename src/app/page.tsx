@@ -1,40 +1,50 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { getFeaturedCars } from "@/lib/actions/vehicles";
+import { Search, ArrowRight, Star, Shield, Zap, Car, FileText, Repeat, DollarSign, Play } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { getFeaturedCars } from "@/lib/actions/vehicles";
 
 export default async function Home() {
   const featuredCars = await getFeaturedCars();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground font-body selection:bg-primary selection:text-white">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-slate-900 text-white py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2583&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
-        <div className="container relative z-10 px-4 md:px-6">
-          <div className="max-w-2xl space-y-6">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-              Find Your Dream Car <br />
-              <span className="text-blue-400">Without the Hassle</span>
+      <section className="relative h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            poster="/hero-background.png"
+          >
+            {/* Placeholder video - Night City Drive */}
+            <source src="https://cdn.coverr.co/videos/coverr-night-driving-in-the-city-2569/1080p.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-black/50 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
+
+        <div className="container relative z-20 px-4">
+          <div className="max-w-4xl mx-auto text-center mb-12">
+            <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white mb-6 uppercase animate-in fade-in slide-in-from-bottom-8 duration-1000">
+              First <span className="text-primary">Class</span>
             </h1>
-            <p className="text-lg text-slate-300">
-              Premium selection of new and used vehicles. Transparent pricing,
-              comprehensive inspections, and flexible financing options.
+            <p className="text-xl md:text-2xl text-gray-100 mb-8 font-light tracking-wide animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+              Experience the pinnacle of automotive engineering.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
               <Link href="/inventory">
-                <Button size="lg" className="text-base bg-blue-600 hover:bg-blue-700 text-white border-none">
-                  View Inventory <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button size="lg" variant="outline" className="text-base bg-transparent border-white text-white hover:bg-white hover:text-slate-900">
-                  Book Test Drive
+                <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-white rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/25">
+                  Explore Collection <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
             </div>
@@ -42,98 +52,108 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Trust Signals */}
-      <section className="py-12 bg-slate-50 border-b">
-        <div className="container px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/10 text-primary">
-                <CheckCircle2 className="h-6 w-6" />
+      {/* Brands Strip */}
+      <div className="py-12 border-b border-white/5 bg-background">
+        <div className="container px-4">
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
+            {[
+              { name: 'Ferrari', logo: 'https://pngimg.com/uploads/ferrari/ferrari_PNG102806.png', invert: false },
+              { name: 'Lamborghini', logo: 'https://pngimg.com/uploads/lamborghini/lamborghini_PNG10709.png', invert: false },
+              { name: 'Porsche', logo: 'https://pngimg.com/uploads/porsche_logo/porsche_logo_PNG1.png', invert: false },
+              { name: 'Rolls Royce', logo: 'https://pngimg.com/uploads/rolls_royce/rolls_royce_PNG36.png', invert: false },
+              { name: 'Bugatti', logo: 'https://pngimg.com/uploads/bugatti_logo/bugatti_logo_PNG8.png', invert: false },
+              { name: 'McLaren', logo: 'https://pngimg.com/uploads/Mclaren/Mclaren_PNG40.png', invert: true }
+            ].map((brand) => (
+              <div key={brand.name} className="relative h-12 w-24 md:h-16 md:w-32 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className={`w-full h-full object-contain ${brand.invert ? 'brightness-0 invert' : ''}`}
+                />
               </div>
-              <div>
-                <h3 className="font-semibold">150+ Point Inspection</h3>
-                <p className="text-sm text-muted-foreground">Every car is rigorously tested</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/10 text-primary">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Transparent Pricing</h3>
-                <p className="text-sm text-muted-foreground">No hidden fees or surprises</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/10 text-primary">
-                <CheckCircle2 className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Flexible Financing</h3>
-                <p className="text-sm text-muted-foreground">Low rates and easy approval</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Featured Cars */}
-      <section className="py-24">
-        <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-12">
+      {/* Featured Collection */}
+      <section className="py-32 bg-background">
+        <div className="container px-4">
+          <div className="flex items-end justify-between mb-16">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Featured Vehicles</h2>
-              <p className="text-muted-foreground mt-2">Hand-picked selections just for you</p>
+              <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">The Collection</span>
+              <h2 className="font-heading text-4xl md:text-6xl font-bold text-white">Latest Arrivals</h2>
             </div>
-            <Link href="/inventory">
-              <Button variant="ghost">View All Cars <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            <Link href="/inventory" className="hidden md:flex items-center text-white hover:text-primary transition-colors group">
+              View Full Inventory <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredCars.map((car) => (
-              <Card key={car.id} className="overflow-hidden group">
-                <div className="aspect-[16/10] bg-slate-100 relative">
-                  {car.images && Array.isArray(car.images) && car.images.length > 0 ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={car.images[0] as string}
-                      alt={`${car.year} ${car.make} ${car.model}`}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground bg-slate-200">
-                      No Image
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2">
-                    <Badge variant="secondary" className="bg-white/90 backdrop-blur">
+              <Link href={`/inventory/${car.id}`} key={car.id} className="group relative block aspect-[4/3] bg-card overflow-hidden rounded-sm hover:-translate-y-2 transition-transform duration-500 ease-out">
+                {Array.isArray(car.images) && car.images.length > 0 && typeof car.images[0] === 'string' ? (
+                  <Image
+                    src={car.images[0]}
+                    alt={`${car.year} ${car.make} ${car.model}`}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-neutral-400">No Image</div>
+                )}
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 transition-opacity duration-300" />
+
+                <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  <div className="flex items-center space-x-2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                    <span className="bg-primary px-2 py-0.5 text-xs font-bold text-white uppercase tracking-wider rounded-sm">
                       {car.condition}
-                    </Badge>
+                    </span>
+                  </div>
+                  <h3 className="font-heading text-2xl font-bold text-white mb-1 group-hover:text-primary transition-colors">
+                    {car.year} {car.make} {car.model}
+                  </h3>
+                  <p className="text-gray-300 font-light mb-4">{Number(car.mileage).toLocaleString()} km • {car.transmission}</p>
+                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                    <span className="text-xl font-bold text-white">${Number(car.price).toLocaleString()}</span>
+                    <span className="text-sm text-gray-300 uppercase tracking-wider group-hover:text-white transition-colors flex items-center">
+                      View Details <ArrowRight className="ml-2 h-3 w-3" />
+                    </span>
                   </div>
                 </div>
-                <CardHeader className="p-4">
-                  <CardTitle className="line-clamp-1 text-lg">
-                    {car.year} {car.make} {car.model}
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">{car.variant}</p>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{Number(car.mileage).toLocaleString()} km</span>
-                    <span>{car.transmission}</span>
-                  </div>
-                  <div className="mt-4 text-xl font-bold text-primary">
-                    ${Number(car.price).toLocaleString()}
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0">
-                  <Link href={`/inventory/${car.id}`} className="w-full">
-                    <Button className="w-full" variant="outline">View Details</Button>
-                  </Link>
-                </CardFooter>
-              </Card>
+              </Link>
             ))}
+          </div>
+
+          <div className="mt-16 text-center md:hidden">
+            <Link href="/inventory">
+              <Button variant="outline" size="lg" className="w-full border-white text-white">View All Inventory</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Services/Trust Section Redesigned */}
+      <section className="py-24 bg-neutral-950 border-t border-white/5">
+        <div className="container px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+            <div className="space-y-4">
+              <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
+              <h3 className="font-heading text-2xl font-bold text-white">Global Sourcing</h3>
+              <p className="text-gray-300 leading-relaxed">We locate rare and exclusive vehicles from around the world, ensuring you get exactly what you desire.</p>
+            </div>
+            <div className="space-y-4">
+              <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
+              <h3 className="font-heading text-2xl font-bold text-white">Premium Service</h3>
+              <p className="text-gray-300 leading-relaxed">From white-glove delivery to comprehensive detailing, our service extends far beyond the sale.</p>
+            </div>
+            <div className="space-y-4">
+              <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
+              <h3 className="font-heading text-2xl font-bold text-white">Guaranteed Quality</h3>
+              <p className="text-gray-300 leading-relaxed">Every vehicle undergoes a rigorous 150-point inspection to ensure pristine condition and performance.</p>
+            </div>
           </div>
         </div>
       </section>

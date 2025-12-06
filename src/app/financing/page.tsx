@@ -3,103 +3,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calculator, Check } from "lucide-react";
+import { Calculator, Check, Wallet, Percent, Calendar } from "lucide-react";
+import { PaymentCalculator } from "@/components/financing/payment-calculator";
 
 export default function FinancingPage() {
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-background font-body">
             <Navbar />
 
-            <div className="container py-12 px-4 md:px-6">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold tracking-tight mb-4">Flexible Financing Options</h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        We work with leading banks and financial institutions to offer you the best rates.
-                        Get pre-approved in minutes without affecting your credit score.
+            {/* Hero Section */}
+            <div className="relative pt-32 pb-12 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800 via-background to-background z-0" />
+                <div className="container relative z-10 px-4 md:px-6 text-center">
+                    <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Financial Services</span>
+                    <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
+                        Bespoke <span className="text-primary">Financing</span>
+                    </h1>
+                    <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                        Tailored financial solutions designed to match your unique requirements.
                     </p>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div className="container py-12 px-4 md:px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                     {/* Calculator */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calculator className="h-5 w-5" />
-                                Loan Calculator
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="price">Vehicle Price ($)</Label>
-                                <Input id="price" type="number" placeholder="50000" defaultValue="50000" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="down">Down Payment ($)</Label>
-                                <Input id="down" type="number" placeholder="10000" defaultValue="10000" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="term">Term (Months)</Label>
-                                    <Input id="term" type="number" placeholder="60" defaultValue="60" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="rate">Interest Rate (%)</Label>
-                                    <Input id="rate" type="number" placeholder="2.88" defaultValue="2.88" />
-                                </div>
-                            </div>
-
-                            <div className="pt-6 border-t">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-muted-foreground">Estimated Monthly Payment</span>
-                                    <span className="text-3xl font-bold text-primary">$762</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground text-right">
-                                    *Estimated payment for illustration purposes only.
-                                </p>
-                            </div>
-
-                            <Button className="w-full" size="lg">Apply for Financing</Button>
-                        </CardContent>
-                    </Card>
+                    {/* Calculator */}
+                    <PaymentCalculator />
 
                     {/* Benefits */}
-                    <div className="space-y-8">
-                        <div className="prose max-w-none">
-                            <h3 className="text-2xl font-bold mb-4">Why Finance with Us?</h3>
-                            <p className="text-muted-foreground mb-6">
-                                Our finance team is dedicated to finding the right plan for your budget.
-                                Whether you have excellent credit or are rebuilding, we have options for you.
+                    <div className="space-y-12">
+                        <div className="space-y-6">
+                            <h3 className="font-heading text-3xl font-bold text-white uppercase tracking-wide border-l-4 border-primary pl-6">
+                                Use Our Leverage
+                            </h3>
+                            <p className="text-gray-300 text-lg font-light leading-relaxed">
+                                Our bespoke financing solutions are designed to make ownership seamless. We work with a network of premium financial institutions to secure the most competitive rates for our clients.
                             </p>
                         </div>
 
-                        <div className="grid gap-4">
+                        <div className="grid gap-6">
                             {[
                                 "Competitive interest rates starting from 2.88%",
                                 "Flexible terms up to 84 months",
                                 "Fast approval process",
                                 "Zero down payment options available",
-                                "Trade-ins accepted as down payment"
+                                "Trade-ins accepted as down payment",
+                                "Balloon scheme options available"
                             ].map((item, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <div className="p-1 rounded-full bg-green-100 text-green-600">
+                                <div key={i} className="flex items-center gap-4 group">
+                                    <div className="p-2 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                                         <Check className="h-4 w-4" />
                                     </div>
-                                    <span>{item}</span>
+                                    <span className="text-gray-200 text-lg font-light">{item}</span>
                                 </div>
                             ))}
                         </div>
 
-                        <Card className="bg-slate-50 border-none">
-                            <CardContent className="pt-6">
-                                <h4 className="font-semibold mb-2">Documents Required</h4>
-                                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                                    <li>NRIC / Passport</li>
-                                    <li>Latest 3 months payslips</li>
-                                    <li>Latest 12 months CPF contribution history</li>
-                                    <li>Proof of residence (if applicable)</li>
-                                </ul>
-                            </CardContent>
-                        </Card>
+                        <div className="bg-black/20 border border-white/10 p-8 rounded-sm backdrop-blur-sm">
+                            <h4 className="font-heading font-bold text-white uppercase tracking-wide mb-4">Required Documents</h4>
+                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300 font-light">
+                                <li className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> NRIC / Passport</li>
+                                <li className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> Latest 3 months payslips</li>
+                                <li className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> Latest 12 months CPF history</li>
+                                <li className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> Proof of residence</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

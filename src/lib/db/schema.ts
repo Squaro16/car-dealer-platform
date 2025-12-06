@@ -19,7 +19,7 @@ export const dealers = pgTable("dealers", {
     address: text("address"),
     contactEmail: text("contact_email"),
     contactPhone: text("contact_phone"),
-    settings: jsonb("settings").default({}), // Branding, currency, etc.
+    settings: jsonb("settings").$type<Record<string, any>>().default({}), // Branding, currency, etc.
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -73,11 +73,11 @@ export const vehicles = pgTable("vehicles", {
     isFeatured: boolean("is_featured").default(false),
 
     // Media
-    images: jsonb("images").default([]), // Array of image URLs
+    images: jsonb("images").$type<string[]>().default([]), // Array of image URLs
 
     // Metadata
     description: text("description"),
-    features: jsonb("features").default([]), // Array of strings
+    features: jsonb("features").$type<string[]>().default([]), // Array of strings
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

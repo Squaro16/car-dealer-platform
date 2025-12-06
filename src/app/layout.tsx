@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
   subsets: ["latin"],
+  variable: "--font-heading",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body",
 });
 
 export const metadata: Metadata = {
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 };
 
 import { Footer } from "@/components/layout/footer";
-
-// ... imports
+import { Toaster } from "sonner";
+import { CarFinderModal } from "@/components/inventory/car-finder-modal";
 
 export default function RootLayout({
   children,
@@ -27,12 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${outfit.variable} ${inter.variable} font-body antialiased bg-background text-foreground`}
       >
         {children}
         <Footer />
+        <Toaster richColors position="bottom-right" theme="dark" />
+        <CarFinderModal />
       </body>
     </html>
   );
