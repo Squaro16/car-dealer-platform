@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // Determine the shape of a vehicle object based on what we see in the code
 // Ideally we would import this, but checking schema.ts showed complex types.
@@ -30,6 +31,34 @@ interface VehicleGridProps {
 
 export function VehicleGrid({ vehicles }: VehicleGridProps) {
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+    const [favorites, setFavorites] = useState<string[]>([]);
+
+    // Load favorites from local storage on mount
+    useEffect(() => {
+        const stored = localStorage.getItem("favorites");
+        if (stored) {
+            setFavorites(JSON.parse(stored));
+        }
+    }, []);
+
+    const toggleFavorite = (e: React.MouseEvent, carId: string) => {
+        e.preventDefault(); // Prevent navigation
+        e.stopPropagation();
+
+        const isFavorited = favorites.includes(carId);
+        let newFavorites;
+
+        if (isFavorited) {
+            newFavorites = favorites.filter(id => id !== carId);
+            toast.info("Removed from favorites");
+        } else {
+            newFavorites = [...favorites, carId];
+            toast.success("Added to favorites");
+        }
+
+        setFavorites(newFavorites);
+        localStorage.setItem("favorites", JSON.stringify(newFavorites));
+    };
 
     if (vehicles.length === 0) {
         return (
@@ -104,10 +133,21 @@ export function VehicleGrid({ vehicles }: VehicleGridProps) {
                                     {car.condition}
                                 </Badge>
                             </div>
+
+                            {/* Favorite Button */}
+                            <button
+                                onClick={(e) => toggleFavorite(e, car.id)}
+                                className="absolute top-3 left-3 z-10 h-8 w-8 rounded-full bg-black/40 backdrop-blur flex items-center justify-center transition-all hover:bg-black/60 hover:scale-110"
+                            >
+                                <Heart
+                                    className={`h-4 w-4 transition-colors ${favorites.includes(car.id) ? "fill-red-500 text-red-500" : "text-white"}`}
+                                />
+                            </button>
+
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
                         </div>
 
-                        <div className={`p-6 flex flex-col justify-between flex-1 ${viewMode === "list" ? "py-4 md:py-6" : ""}`}>
+                        <div className={`p-4 md:p-6 flex flex-col justify-between flex-1 ${viewMode === "list" ? "py-4 md:py-6" : ""}`}>
                             <div>
                                 <div className="mb-4">
                                     <div className="flex items-center space-x-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">

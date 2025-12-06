@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "sonner";
 import { CarFinderModal } from "@/components/inventory/car-finder-modal";
+import { FloatingConcierge } from "@/components/layout/floating-concierge";
 
 export default function RootLayout({
   children,
@@ -35,6 +36,7 @@ export default function RootLayout({
         <Footer />
         <Toaster richColors position="bottom-right" theme="dark" />
         <CarFinderModal />
+        <FloatingConcierge />
       </body>
     </html>
   );

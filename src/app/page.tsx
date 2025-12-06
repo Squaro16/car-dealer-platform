@@ -35,10 +35,10 @@ export default async function Home() {
 
         <div className="container relative z-20 px-4">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h1 className="font-heading text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white mb-6 uppercase animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <h1 className="font-heading text-4xl md:text-6xl lg:text-8xl font-bold tracking-tighter text-white mb-6 uppercase animate-in fade-in slide-in-from-bottom-8 duration-1000">
               First <span className="text-primary">Class</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-100 mb-8 font-light tracking-wide animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            <p className="text-lg md:text-2xl text-gray-100 mb-8 font-light tracking-wide animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
               Experience the pinnacle of automotive engineering.
             </p>
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
@@ -77,7 +77,7 @@ export default async function Home() {
       </div>
 
       {/* Featured Collection */}
-      <section className="py-32 bg-background">
+      <section className="py-16 md:py-32 bg-background">
         <div className="container px-4">
           <div className="flex items-end justify-between mb-16">
             <div>
@@ -136,7 +136,7 @@ export default async function Home() {
       </section>
 
       {/* Services/Trust Section Redesigned */}
-      <section className="py-24 bg-neutral-950 border-t border-white/5">
+      <section className="py-16 md:py-24 bg-neutral-950 border-t border-white/5">
         <div className="container px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
             <div className="space-y-4">

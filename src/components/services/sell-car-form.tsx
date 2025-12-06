@@ -100,7 +100,7 @@ export function SellCarForm() {
                 <CardContent className="space-y-6">
                     {step === 1 && (
                         <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>VIN (Optional)</Label>
                                     <Input
@@ -121,7 +121,7 @@ export function SellCarForm() {
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Make</Label>
                                     <Select value={formData.make} onValueChange={(v) => handleChange("make", v)}>

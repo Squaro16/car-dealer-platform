@@ -102,7 +102,7 @@ export function PaymentCalculator() {
                             />
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="term" className="text-gray-200 uppercase text-xs tracking-wider">Term (Months)</Label>
                             <div className="relative">

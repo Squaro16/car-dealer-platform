@@ -90,7 +90,7 @@ export function FilterForm() {
                     <input
                         type="text"
                         placeholder="Search by make, model, or keywords..."
-                        className="w-full bg-transparent border-none outline-none h-10 pl-10 text-white placeholder:text-gray-500 focus:ring-0 text-sm"
+                        className="w-full bg-transparent border-none outline-none h-10 pl-10 text-white placeholder:text-gray-500 focus:ring-0 text-base md:text-sm"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -203,14 +203,14 @@ export function FilterForm() {
                                     <Input
                                         type="number"
                                         placeholder="Min"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={minPrice}
                                         onChange={(e) => setMinPrice(e.target.value)}
                                     />
                                     <Input
                                         type="number"
                                         placeholder="Max"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={maxPrice}
                                         onChange={(e) => setMaxPrice(e.target.value)}
                                     />
@@ -224,14 +224,14 @@ export function FilterForm() {
                                     <Input
                                         type="number"
                                         placeholder="From"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={minYear}
                                         onChange={(e) => setMinYear(e.target.value)}
                                     />
                                     <Input
                                         type="number"
                                         placeholder="To"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={maxYear}
                                         onChange={(e) => setMaxYear(e.target.value)}
                                     />
@@ -245,14 +245,14 @@ export function FilterForm() {
                                     <Input
                                         type="number"
                                         placeholder="Min"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={minMileage}
                                         onChange={(e) => setMinMileage(e.target.value)}
                                     />
                                     <Input
                                         type="number"
                                         placeholder="Max"
-                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 text-sm focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
+                                        className="bg-black/40 border-white/10 text-white placeholder:text-gray-600 h-10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono"
                                         value={maxMileage}
                                         onChange={(e) => setMaxMileage(e.target.value)}
                                     />

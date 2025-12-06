@@ -23,7 +23,7 @@ export default function AboutPage() {
             </section>
 
             {/* Main Content */}
-            <div className="container py-24 px-4 md:px-6">
+            <div className="container py-16 md:py-24 px-4 md:px-6">
                 {/* Story Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
                     <div className="space-y-8">

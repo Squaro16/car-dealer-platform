@@ -25,7 +25,7 @@ export default function ContactPage() {
                 </div>
             </div>
 
-            <div className="container py-12 px-4 md:px-6 relative z-10">
+            <div className="container py-8 md:py-12 px-4 md:px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                     {/* Contact Form */}
                     <Card className="border-none bg-card/30 backdrop-blur-md">

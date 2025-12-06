@@ -88,7 +88,7 @@ export function SpecsList({ models }: SpecsListProps) {
                         </div>
 
                         {/* Specs Content */}
-                        <div className="p-6 flex-1 flex flex-col">
+                        <div className="p-4 md:p-6 flex-1 flex flex-col">
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <div className="space-y-1">
                                     <span className="text-xs text-gray-500 uppercase tracking-wider">Engine</span>

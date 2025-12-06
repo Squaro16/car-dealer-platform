@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { getVehicle } from "@/lib/actions/vehicles";
 import { notFound } from "next/navigation";
 import { Calendar, Gauge, Fuel, Zap, CheckCircle2 } from "lucide-react";
@@ -182,10 +184,12 @@ export default async function VehicleDetailPage({
                                     <p className="text-gray-300 text-sm mb-8">Includes all taxes & duties</p>
 
                                     <div className="space-y-4">
-                                        <LeadForm
-                                            vehicleId={vehicle.id}
-                                            vehicleTitle={`${String(vehicle.year)} ${String(vehicle.make)} ${String(vehicle.model)}`}
-                                        />
+                                        <div id="lead-form" className="scroll-mt-24">
+                                            <LeadForm
+                                                vehicleId={vehicle.id}
+                                                vehicleTitle={`${String(vehicle.year)} ${String(vehicle.make)} ${String(vehicle.model)}`}
+                                            />
+                                        </div>
                                         <div className="text-center">
                                             <span className="text-xs text-gray-400 uppercase tracking-widest">Global Shipping Available</span>
                                         </div>
@@ -199,6 +203,21 @@ export default async function VehicleDetailPage({
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* Mobile Sticky Action Bar */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t border-white/10 md:hidden z-50 safe-area-bottom">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <p className="text-xs text-gray-400 uppercase tracking-widest">Price</p>
+                        <p className="text-xl font-bold text-white">${Number(vehicle.price).toLocaleString()}</p>
+                    </div>
+                    <Link href="#lead-form" className="flex-1">
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider">
+                            Inquire Now
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </div>

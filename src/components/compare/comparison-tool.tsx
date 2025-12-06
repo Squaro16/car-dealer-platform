@@ -184,9 +184,9 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/10 bg-white/5">
-                                <th className="p-6 w-1/4 font-heading text-gray-400 font-normal">Feature</th>
+                                <th className="p-3 md:p-6 w-1/4 font-heading text-gray-400 font-normal">Feature</th>
                                 {slots.map((v, i) => (
-                                    <th key={i} className="p-6 w-1/4">
+                                    <th key={i} className="p-3 md:p-6 w-1/4">
                                         {v ? <span className="font-bold text-white">{v.make} {v.model}</span> : <span className="text-gray-600 italic">Empty</span>}
                                     </th>
                                 ))}
@@ -203,9 +203,9 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                 { label: "Condition", key: "condition", capitalize: true },
                             ].map((row) => (
                                 <tr key={row.key} className="hover:bg-white/5 transition-colors">
-                                    <td className="p-6 text-gray-400 font-medium">{row.label}</td>
+                                    <td className="p-3 md:p-6 text-gray-400 font-medium">{row.label}</td>
                                     {slots.map((vehicle, i) => (
-                                        <td key={i} className="p-6 text-white text-lg">
+                                        <td key={i} className="p-3 md:p-6 text-white text-lg">
                                             {vehicle ? (
                                                 // @ts-ignore
                                                 row.format ? row.format(vehicle[row.key]) : (
@@ -222,9 +222,9 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
 
                             {/* Features Row */}
                             <tr className="border-t border-white/10 bg-white/5">
-                                <td className="p-6 text-gray-400 font-medium align-top">Key Features</td>
+                                <td className="p-3 md:p-6 text-gray-400 font-medium align-top">Key Features</td>
                                 {slots.map((vehicle, i) => (
-                                    <td key={i} className="p-6 align-top">
+                                    <td key={i} className="p-3 md:p-6 align-top">
                                         {vehicle && Array.isArray(vehicle.features) ? (
                                             <div className="flex flex-col gap-2">
                                                 {(vehicle.features as string[]).slice(0, 5).map(f => (

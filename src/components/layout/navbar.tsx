@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Car, ChevronDown, FileText, Repeat, DollarSign } from "lucide-react";
+import { Car, ChevronDown, FileText, Repeat, DollarSign, Menu, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getInventoryStats } from "@/lib/actions/vehicles";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export function Navbar() {
     const [isHovered, setIsHovered] = useState(false);
@@ -142,11 +145,76 @@ export function Navbar() {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    <Link href="/contact">
-                        <div className="hidden md:flex items-center text-xs font-bold uppercase tracking-widest text-primary hover:text-white transition-colors cursor-pointer mr-4">
+                    <Link href="/contact" className="hidden md:block">
+                        <div className="flex items-center text-xs font-bold uppercase tracking-widest text-primary hover:text-white transition-colors cursor-pointer mr-4">
                             Inquire Now
                         </div>
                     </Link>
+
+                    {/* Mobile Menu */}
+                    <div className="md:hidden">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                                    <Menu className="h-6 w-6" />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="bg-neutral-950 border-white/10 p-0 text-white">
+                                <div className="flex flex-col h-full">
+                                    <div className="p-6 border-b border-white/10">
+                                        <Link href="/" className="flex items-center gap-2 font-heading font-bold text-xl tracking-tighter uppercase">
+                                            <Car className="h-5 w-5 text-primary" />
+                                            <span>Prestige Motors</span>
+                                        </Link>
+                                    </div>
+                                    <nav className="flex-1 flex flex-col p-6 gap-6 overflow-y-auto">
+                                        <Collapsible className="group/collapsible">
+                                            <CollapsibleTrigger className="flex items-center justify-between w-full text-lg font-medium hover:text-primary transition-colors">
+                                                Cars
+                                                <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]/collapsible:rotate-180" />
+                                            </CollapsibleTrigger>
+                                            <CollapsibleContent className="space-y-4 pt-4 pl-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                                                <Link href="/inventory" className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                                                    Inventory
+                                                </Link>
+                                                <Link href="/specs" className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                                                    Specifications
+                                                </Link>
+                                                <Link href="/compare" className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                                                    Compare Models
+                                                </Link>
+                                                <Link href="/sell-my-car" className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                                                    Sell My Car
+                                                </Link>
+                                            </CollapsibleContent>
+                                        </Collapsible>
+                                        <Link href="/financing" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
+                                            Financing <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                        <Link href="/about" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
+                                            About <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                        <Link href="/contact" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
+                                            Contact <ArrowRight className="h-4 w-4" />
+                                        </Link>
+
+                                    </nav>
+                                    <div className="p-6 border-t border-white/10">
+                                        <Link href="/contact">
+                                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-wider py-6">
+                                                Inquire Now
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
                 </div>
             </div>
         </header>

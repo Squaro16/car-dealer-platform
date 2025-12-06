@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, jsonb, pgEnum, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, boolean, jsonb, pgEnum, decimal, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Enums
@@ -22,6 +22,10 @@ export const dealers = pgTable("dealers", {
     settings: jsonb("settings").$type<Record<string, any>>().default({}), // Branding, currency, etc.
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        slugIdx: uniqueIndex("dealers_slug_idx").on(table.slug),
+    };
 });
 
 // Users Table (Linked to Supabase Auth via id)
@@ -35,6 +39,10 @@ export const users = pgTable("users", {
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        dealerIdIdx: index("users_dealer_id_idx").on(table.dealerId),
+    };
 });
 
 // Vehicles Table
@@ -82,6 +90,13 @@ export const vehicles = pgTable("vehicles", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     createdById: uuid("created_by_id").references(() => users.id),
+}, (table) => {
+    return {
+        vehicleDealerIdIdx: index("vehicles_dealer_id_idx").on(table.dealerId),
+        stockNumberIdx: index("vehicles_stock_number_idx").on(table.stockNumber),
+        makeModelIdx: index("vehicles_make_model_idx").on(table.make, table.model),
+        createdByIdIdx: index("vehicles_created_by_id_idx").on(table.createdById),
+    };
 });
 
 // Leads Table
@@ -105,6 +120,12 @@ export const leads = pgTable("leads", {
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        leadsDealerIdIdx: index("leads_dealer_id_idx").on(table.dealerId),
+        leadsVehicleIdIdx: index("leads_vehicle_id_idx").on(table.vehicleId),
+        leadsAssignedToIdIdx: index("leads_assigned_to_id_idx").on(table.assignedToId),
+    };
 });
 
 // Relations Definitions
@@ -167,6 +188,11 @@ export const customers = pgTable("customers", {
     notes: text("notes"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        customersDealerIdIdx: index("customers_dealer_id_idx").on(table.dealerId),
+        customersEmailIdx: index("customers_email_idx").on(table.email),
+    };
 });
 
 // Sales Table
@@ -184,6 +210,13 @@ export const sales = pgTable("sales", {
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        salesDealerIdIdx: index("sales_dealer_id_idx").on(table.dealerId),
+        salesVehicleIdIdx: index("sales_vehicle_id_idx").on(table.vehicleId),
+        salesCustomerIdIdx: index("sales_customer_id_idx").on(table.customerId),
+        salesSellerIdIdx: index("sales_seller_id_idx").on(table.sellerId),
+    };
 });
 
 // Expenses Table
@@ -199,6 +232,11 @@ export const expenses = pgTable("expenses", {
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        expensesDealerIdIdx: index("expenses_dealer_id_idx").on(table.dealerId),
+        expensesVehicleIdIdx: index("expenses_vehicle_id_idx").on(table.vehicleId),
+    };
 });
 
 // Relations for New Tables
@@ -264,6 +302,10 @@ export const sourcingRequests = pgTable("sourcing_requests", {
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        sourcingRequestsDealerIdIdx: index("sourcing_requests_dealer_id_idx").on(table.dealerId),
+    };
 });
 
 export const sourcingRequestsRelations = relations(sourcingRequests, ({ one }) => ({
