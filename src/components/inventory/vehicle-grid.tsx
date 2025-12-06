@@ -37,6 +37,7 @@ export function VehicleGrid({ vehicles }: VehicleGridProps) {
     useEffect(() => {
         const stored = localStorage.getItem("favorites");
         if (stored) {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
             setFavorites(JSON.parse(stored));
         }
     }, []);

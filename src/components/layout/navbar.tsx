@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Car, ChevronDown, FileText, Repeat, DollarSign, Menu, ArrowRight } from "lucide-react";
+import { Car, ChevronDown, FileText, Repeat, DollarSign, Menu, ArrowRight, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getInventoryStats } from "@/lib/actions/vehicles";
 import { Button } from "@/components/ui/button";
@@ -80,6 +80,15 @@ export function Navbar() {
                                         <div>
                                             <div className="font-bold text-white">Sell My Car</div>
                                             <div className="text-xs text-gray-400">Get a valuation</div>
+                                        </div>
+                                    </Link>
+                                    <Link href="/services/sourcing" className="group/item flex items-center gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                                        <div className="p-2 rounded-md bg-purple-500/20 text-purple-400 group-hover/item:scale-110 transition-transform">
+                                            <Search size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-white">Vehicle Sourcing</div>
+                                            <div className="text-xs text-gray-400">We find your dream car</div>
                                         </div>
                                     </Link>
                                 </div>
@@ -191,6 +200,10 @@ export function Navbar() {
                                                     <div className="h-1.5 w-1.5 rounded-full bg-current" />
                                                     Sell My Car
                                                 </Link>
+                                                <Link href="/services/sourcing" className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-current" />
+                                                    Vehicle Sourcing
+                                                </Link>
                                             </CollapsibleContent>
                                         </Collapsible>
                                         <Link href="/financing" className="text-lg font-medium hover:text-primary transition-colors flex items-center justify-between">
@@ -220,3 +233,4 @@ export function Navbar() {
         </header>
     );
 }
+

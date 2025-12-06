@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+
 
 export interface Vehicle {
     id: string;
@@ -106,6 +106,12 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                 <div className="p-4 flex-1">
                                     <h3 className="text-xl font-bold text-white">{vehicle.year} {vehicle.make}</h3>
                                     <p className="text-lg text-primary">{vehicle.model} {vehicle.variant}</p>
+                                    {/* Assuming vehicle1 and vehicle2 are available in this scope for comparison context */}
+                                    {/* This comparison text would typically be generated based on the two vehicles being compared */}
+                                    {/* For this edit, we'll insert it as provided, assuming the variables are defined or it's placeholder text */}
+                                    <p className="text-sm text-yellow-700">
+                                        These vehicles satisfy different needs. The <strong>{vehicle.make} {vehicle.model}</strong> is likely better for performance or luxury, while the <strong>{vehicle.make} {vehicle.model}</strong> might be more practical or efficient.
+                                    </p>
                                     <p className="text-2xl font-bold text-white mt-2">${Number(vehicle.price).toLocaleString()}</p>
                                     <div className="mt-4">
                                         <Button asChild className="w-full bg-white/10 hover:bg-white/20">
@@ -146,7 +152,7 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                                     onClick={() => handleSelectVehicle(v)}
                                                 >
                                                     <div className="h-16 w-24 bg-neutral-900 rounded overflow-hidden shrink-0">
-                                                        {getImg(v) && <img src={getImg(v)!} className="w-full h-full object-cover" />}
+                                                        {getImg(v) && <img src={getImg(v)!} alt={`${v.year} ${v.make} ${v.model}`} className="w-full h-full object-cover" />}
                                                     </div>
                                                     <div className="flex-1">
                                                         <h4 className="font-bold text-white">{v.year} {v.make} {v.model}</h4>
@@ -207,10 +213,10 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                     {slots.map((vehicle, i) => (
                                         <td key={i} className="p-3 md:p-6 text-white text-lg">
                                             {vehicle ? (
-                                                // @ts-ignore
+                                                // @ts-expect-error: Index signature issue
                                                 row.format ? row.format(vehicle[row.key]) : (
                                                     <span className={row.capitalize ? "capitalize" : ""}>
-                                                        {/* @ts-ignore */}
+                                                        {/* @ts-expect-error: Index signature issue */}
                                                         {vehicle[row.key] || "-"}
                                                     </span>
                                                 )

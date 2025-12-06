@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MessageSquare, X, ArrowRight } from "lucide-react";
+import { MessageCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +44,7 @@ export function FloatingConcierge() {
                     className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white flex items-center justify-center gap-2"
                     onClick={() => window.open('https://wa.me/6512345678', '_blank')}
                 >
-                    <MessageSquare className="h-4 w-4" />
+                    <MessageCircle className="h-4 w-4" />
                     Start WhatsApp Chat
                 </Button>
             </div>
@@ -62,7 +62,7 @@ export function FloatingConcierge() {
                     <X className="h-6 w-6 text-white" />
                 ) : (
                     <div className="relative">
-                        <MessageSquare className="h-6 w-6 text-white" />
+                        <MessageCircle className="h-5 w-5 text-green-500" />
                         <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
