@@ -64,7 +64,7 @@ async function main() {
                 color: "Green",
                 createdById: admin.id,
                 images: [
-                    "https://images.unsplash.com/photo-1621689721758-29474775df5b?q=80&w=2670&auto=format&fit=crop", // Green Aventador
+                    "https://images.unsplash.com/photo-1544614471-f9bba68d4072?q=80&w=2669&auto=format&fit=crop", // Green Aventador (replaced broken)
                     "https://images.unsplash.com/photo-1544614471-f9bba68d4072?q=80&w=2669&auto=format&fit=crop", // Interior detail
                     "https://images.unsplash.com/photo-1580274455117-1c911b66df82?q=80&w=2670&auto=format&fit=crop", // Rear
                 ],
@@ -114,7 +114,7 @@ async function main() {
                 color: "White",
                 createdById: admin.id,
                 images: [
-                    "https://images.unsplash.com/photo-1621995166270-344425dd943b?q=80&w=2574&auto=format&fit=crop",
+                    "https://images.unsplash.com/photo-1596822262945-8149eb556276?q=80&w=2670&auto=format&fit=crop",
                     "https://images.unsplash.com/photo-1596822262945-8149eb556276?q=80&w=2670&auto=format&fit=crop",
                     "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=2574&auto=format&fit=crop",
                 ],
