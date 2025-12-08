@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -76,7 +77,15 @@ export function Sidebar() {
     return (
         <div className="flex h-full w-64 flex-col border-r bg-card px-3 py-4">
             <div className="mb-8 flex items-center px-3">
-                <h1 className="text-xl font-bold tracking-tight">DealerOS</h1>
+                <div className="relative h-8 w-32">
+                    <Image
+                        src="/ls-motor-logo.png"
+                        alt="LS Motor"
+                        fill
+                        className="object-contain object-left"
+                        priority
+                    />
+                </div>
             </div>
             <div className="flex-1 space-y-1">
                 {sidebarItems.map((item) => (
