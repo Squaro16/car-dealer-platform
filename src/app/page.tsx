@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowRight, Star, Shield, Zap, Car, FileText, Repeat, DollarSign, Play } from "lucide-react";
 import Image from "next/image";
@@ -10,7 +10,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground font-body selection:bg-primary selection:text-white">
-      <Navbar />
+      {/* Navbar handled in global layout */}
 
       {/* Hero Section */}
       <section className="relative h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
@@ -141,18 +141,18 @@ export default async function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
             <div className="space-y-4">
               <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
-              <h3 className="font-heading text-2xl font-bold text-white">Global Sourcing</h3>
-              <p className="text-gray-300 leading-relaxed">We locate rare and exclusive vehicles from around the world, ensuring you get exactly what you desire.</p>
+              <h3 className="font-heading text-2xl font-bold text-white">Wide Selection</h3>
+              <p className="text-gray-300 leading-relaxed">LS Motor is a used car dealer with a wide range of selection covering various brands, models and features. We are dedicated to giving our customers a quality experience when the time comes for you to buy or sell your vehicle.</p>
             </div>
             <div className="space-y-4">
               <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
-              <h3 className="font-heading text-2xl font-bold text-white">Premium Service</h3>
-              <p className="text-gray-300 leading-relaxed">From white-glove delivery to comprehensive detailing, our service extends far beyond the sale.</p>
+              <h3 className="font-heading text-2xl font-bold text-white">Quality Assurance</h3>
+              <p className="text-gray-300 leading-relaxed">Vehicle inventory displayed on LS Motor’s website is updated daily. Each vehicle is thoroughly inspected and serviced by our in-house service department before being listed for sale. Enjoy 6 months of warranty when purchasing a vehicle from us.*</p>
             </div>
             <div className="space-y-4">
               <Star className="h-10 w-10 text-primary mx-auto md:mx-0" />
-              <h3 className="font-heading text-2xl font-bold text-white">Guaranteed Quality</h3>
-              <p className="text-gray-300 leading-relaxed">Every vehicle undergoes a rigorous 150-point inspection to ensure pristine condition and performance.</p>
+              <h3 className="font-heading text-2xl font-bold text-white">Trusted by Thousands</h3>
+              <p className="text-gray-300 leading-relaxed">With over thousands of cars sold to happy customers, LS Motor have among the best review and ratings in the industry. Hundreds of 5 star ratings on Google and countless happy customers is what allowed LS Motor to continue to serve over 20 years.</p>
             </div>
           </div>
         </div>

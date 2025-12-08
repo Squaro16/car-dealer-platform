@@ -66,7 +66,7 @@ export default function LoginPage() {
                         <Car className="h-8 w-8" />
                     </div>
                     <h1 className="text-3xl font-heading font-bold tracking-tight text-center">
-                        Prestige Motors
+                        LS Motor
                     </h1>
                     <p className="text-gray-400 mt-2 text-center text-sm">
                         Dealer Management Portal
@@ -95,7 +95,7 @@ export default function LoginPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="admin@prestigemotors.com"
+                                    placeholder="admin@lsmotor.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required

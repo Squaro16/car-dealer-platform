@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Car, ChevronDown, FileText, Repeat, DollarSign, Menu, ArrowRight, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getInventoryStats } from "@/lib/actions/vehicles";
@@ -22,9 +23,16 @@ export function Navbar() {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-md supports-[backdrop-filter]:bg-black/20">
             <div className="container flex h-20 items-center justify-between px-4 md:px-6 relative">
-                <Link href="/" className="flex items-center gap-2 font-heading font-bold text-2xl tracking-tighter uppercase relative z-50">
-                    <Car className="h-6 w-6 text-primary" />
-                    <span>Prestige Motors</span>
+                <Link href="/" className="flex items-center gap-2 relative z-50">
+                    <div className="relative h-12 w-auto aspect-[3/1]">
+                        <Image
+                            src="/ls-motor-logo.png"
+                            alt="LS Motor"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
                 </Link>
 
                 <nav className="hidden md:flex gap-8 text-sm font-medium items-center">

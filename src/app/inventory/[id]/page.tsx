@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default async function VehicleDetailPage({
 
     return (
         <div className="min-h-screen flex flex-col bg-background font-body">
-            <Navbar />
+            {/* Navbar handled in global layout */}
 
             {/* Immersive Audio/Visual Hero replaced by Gallery */}
             <div className="container py-8 px-4 md:px-6">
@@ -199,7 +199,7 @@ export default async function VehicleDetailPage({
 
                             <div className="p-6 border border-white/10 rounded-sm bg-black/20 text-center">
                                 <p className="text-gray-300 text-sm mb-2">Need help?</p>
-                                <p className="text-white text-lg font-bold">Call words +1 (555) 000-0000</p>
+                                <p className="text-white text-lg font-bold">+6017 266 4314 (Eugene)</p>
                             </div>
                         </div>
                     </div>

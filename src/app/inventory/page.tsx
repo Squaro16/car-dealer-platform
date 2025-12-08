@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { getPublicVehicles } from "@/lib/actions/vehicles";
 import { FilterForm } from "@/components/inventory/filter-form";
 import { PaginationControls } from "@/components/ui/pagination-controls";
@@ -47,7 +47,7 @@ export default async function PublicInventoryPage({
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar />
+            {/* Navbar handled in global layout */}
 
             <div className="container py-12 px-4 md:px-6">
                 <div className="flex flex-col gap-4 mb-8">

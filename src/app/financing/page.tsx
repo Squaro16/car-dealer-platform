@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { PaymentCalculator } from "@/components/financing/payment-calculator";
 export default function FinancingPage() {
     return (
         <div className="min-h-screen flex flex-col bg-background font-body">
-            <Navbar />
+            {/* Navbar handled in global layout */}
 
             {/* Hero Section */}
             <div className="relative pt-32 pb-12 overflow-hidden">

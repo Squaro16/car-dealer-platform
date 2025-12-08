@@ -1,11 +1,11 @@
 import { SourcingForm } from "@/components/services/sourcing-form";
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { CheckCircle2, ShieldCheck, Globe2, Clock } from "lucide-react";
 
 export default function SourcingPage() {
     return (
         <main className="min-h-screen bg-background text-foreground">
-            <Navbar />
+            {/* Navbar handled in global layout */}
 
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-neutral-900 text-white">

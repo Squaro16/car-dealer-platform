@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/layout/navbar";
+// import { Navbar } from "@/components/layout/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 export default function ContactPage() {
     return (
         <div className="min-h-screen flex flex-col bg-background font-body">
-            <Navbar />
+            {/* Navbar handled in global layout */}
 
             {/* Hero Section */}
             <div className="relative pt-32 pb-12 overflow-hidden">
@@ -17,7 +17,7 @@ export default function ContactPage() {
                 <div className="container relative z-10 px-4 md:px-6 text-center">
                     <span className="text-primary font-bold tracking-widest uppercase text-sm mb-4 block">Get in Touch</span>
                     <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight text-white mb-6 uppercase">
-                        Contact <span className="text-primary">Prestige</span>
+                        Contact <span className="text-primary">LS Motor</span>
                     </h1>
                     <p className="text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
                         Whether you&apos;re looking to acquire a specific vehicle or have questions about our inventory, our concierge team is at your service.
@@ -69,10 +69,10 @@ export default function ContactPage() {
                     <div className="space-y-12">
                         <div className="grid gap-8">
                             {[
-                                { icon: MapPin, title: "Visit Our Showroom", content: ["123 Premium Drive", "Automotive City, SG 123456"] },
-                                { icon: Phone, title: "Call Us", content: ["+65 6123 4567"] },
-                                { icon: Mail, title: "Email Us", content: ["contact@prestigemotors.com"] },
-                                { icon: Clock, title: "Opening Hours", content: ["Mon - Fri: 9:00 AM - 7:00 PM", "Sat - Sun: 10:00 AM - 6:00 PM"] }
+                                { icon: MapPin, title: "Visit Our Showroom", content: ["Unit E-LG-03A, Neo Damansara", "Jalan PJU 8/1, Bandar Damansara Perdana", "47820 Petaling Jaya, Selangor"] },
+                                { icon: Phone, title: "Call Us", content: ["+6017 266 4314 (Eugene)"] },
+                                { icon: Mail, title: "Email Us", content: ["lsmotor3838@gmail.com"] },
+                                { icon: Clock, title: "Opening Hours", content: ["Mon - Sat: 10:00 AM - 6:00 PM", "Sun: Closed"] }
                             ].map((item, idx) => (
                                 <div key={idx} className="flex items-start gap-6 group">
                                     <div className="p-4 rounded-sm bg-white/5 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 border border-white/5">

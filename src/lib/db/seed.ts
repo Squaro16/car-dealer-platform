@@ -25,9 +25,9 @@ async function main() {
 
         // 1. Create Dealer
         const [dealer] = await db.insert(dealers).values({
-            name: "Prestige Motors",
-            slug: "prestige-motors",
-            contactEmail: "admin@prestigemotors.com",
+            name: "LS Motor",
+            slug: "ls-motor",
+            contactEmail: "lsmotor3838@gmail.com",
             settings: { currency: "SGD", country: "SG" },
         }).returning();
 
@@ -39,7 +39,7 @@ async function main() {
         const [admin] = await db.insert(users).values({
             id: "00000000-0000-0000-0000-000000000000", // REPLACE WITH REAL SUPABASE USER ID
             dealerId: dealer.id,
-            email: "admin@prestigemotors.com",
+            email: "admin@lsmotor.com",
             name: "Admin User",
             role: "admin",
         }).returning();

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Car, Facebook, Instagram, Twitter, Mail, MapPin, Phone } from "lucide-react";
 
 export function Footer() {
@@ -7,9 +8,13 @@ export function Footer() {
             <div className="container px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     <div className="space-y-6">
-                        <Link href="/" className="flex items-center gap-2 font-heading font-bold text-2xl tracking-tighter uppercase text-white">
-                            <Car className="h-6 w-6 text-primary" />
-                            <span>Prestige Motors</span>
+                        <Link href="/" className="block relative h-12 w-32 mb-4">
+                            <Image
+                                src="/ls-motor-logo.png"
+                                alt="LS Motor"
+                                fill
+                                className="object-contain object-left"
+                            />
                         </Link>
                         Curating the world&apos;s finest automobiles for the most discerning collectors. Experience excellence in every interaction.
                         <div className="flex gap-4">
@@ -47,21 +52,23 @@ export function Footer() {
                         <ul className="space-y-4 text-sm font-normal">
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                                <span>123 Premium Drive<br />Automotive City, SG 123456</span>
+                                <span className="text-gray-400 text-sm">
+                                    Unit E-LG-03A, Neo Damansara, Jalan PJU 8/1, Bandar Damansara Perdana, 47820 Petaling Jaya, Selangor
+                                </span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-primary shrink-0" />
-                                <span>+65 6123 4567</span>
+                                <span className="text-gray-400 text-sm">+6017 266 4314 (Eugene)</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-primary shrink-0" />
-                                <span>contact@prestigemotors.com</span>
+                                <span className="text-gray-400 text-sm">lsmotor3838@gmail.com</span>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div className="mt-16 pt-8 border-t border-white/10 text-center text-sm text-gray-300 font-normal flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p>© {new Date().getFullYear()} Prestige Motors. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} LS Motor. All rights reserved.</p>
                     <div className="flex gap-6">
                         <Link href="#" className="hover:text-gray-400 transition-colors">Privacy Policy</Link>
                         <Link href="#" className="hover:text-gray-400 transition-colors">Terms of Service</Link>
