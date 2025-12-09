@@ -1,3 +1,4 @@
+// Admin leads table showing inquiries and linked vehicles.
 import {
     Table,
     TableBody,
@@ -8,6 +9,11 @@ import {
 } from "@/components/ui/table";
 import { getLeads } from "@/lib/actions/leads";
 import { LeadStatusUpdate } from "@/components/dashboard/lead-status-update";
+
+function getMakeName(vehicle: { make: string | null } | null | undefined) {
+    if (!vehicle) return "";
+    return vehicle.make ?? "";
+}
 
 export default async function LeadsPage() {
     const leads = await getLeads();
@@ -41,7 +47,7 @@ export default async function LeadsPage() {
                                 <TableCell>
                                     {lead.vehicle ? (
                                         <span>
-                                            {lead.vehicle.year} {lead.vehicle.make} {lead.vehicle.model}
+                                            {lead.vehicle.year} {getMakeName(lead.vehicle)} {lead.vehicle.model}
                                         </span>
                                     ) : (
                                         <span className="text-muted-foreground">General Inquiry</span>

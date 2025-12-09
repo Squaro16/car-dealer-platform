@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const vehicleSchema = z.object({
-    make: z.string().min(1, "Make is required"),
+    makeId: z.string().uuid("Please select a valid manufacturer"),
     model: z.string().min(1, "Model is required"),
     year: z.coerce.number().min(1900).max(new Date().getFullYear() + 1),
     price: z.coerce.number().min(0, "Price must be positive"),

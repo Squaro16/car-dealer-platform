@@ -14,6 +14,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileText, Plus } from "lucide-react";
 
+// Sales history listing with pagination and links to invoices.
+
 export default async function SalesPage({
     searchParams,
 }: {
@@ -66,7 +68,7 @@ export default async function SalesPage({
                                         </TableCell>
                                         <TableCell>
                                             <div className="font-medium">
-                                                {sale.vehicle.year} {sale.vehicle.make} {sale.vehicle.model}
+                                                {sale.vehicle.year} {sale.vehicle.make?.name ?? ""} {sale.vehicle.model}
                                             </div>
                                             <div className="text-xs text-muted-foreground">
                                                 {sale.vehicle.vin}

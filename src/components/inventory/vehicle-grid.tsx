@@ -1,18 +1,22 @@
 "use client";
 
+// Renders the public inventory grid with view toggle, favorites, and lazy images.
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { LayoutGrid, List, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 // Determine the shape of a vehicle object based on what we see in the code
-// Ideally we would import this, but checking schema.ts showed complex types.
-// We'll define a compatible interface for the props.
+// This now includes joined make data from the database query
 export interface Vehicle {
     id: string;
-    make: string;
+    makeId: string;
+    make: string | { name?: string };
+    makeCountry: string | null;
     model: string;
     year: number;
     price: string | number;
@@ -23,6 +27,15 @@ export interface Vehicle {
     variant: string | null;
     condition: string;
     images: unknown; // jsonb in DB
+    status?: string;
+    color?: string | null;
+    bodyType?: string | null;
+    doors?: number | null;
+    seats?: number | null;
+    description?: string | null;
+    features?: unknown;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 interface VehicleGridProps {
@@ -30,6 +43,13 @@ interface VehicleGridProps {
 }
 
 export function VehicleGrid({ vehicles }: VehicleGridProps) {
+    function getMakeName(car: Vehicle): string {
+        if (typeof car.make === "string") {
+            return car.make;
+        }
+        return car.make?.name ?? "";
+    }
+
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
     const [favorites, setFavorites] = useState<string[]>([]);
 
@@ -110,17 +130,29 @@ export function VehicleGrid({ vehicles }: VehicleGridProps) {
                             }`}>
                             {Array.isArray(car.images) && car.images.length > 0 && typeof car.images[0] === 'string' ? (
                                 <>
-                                    <img
+                                    <Image
                                         src={car.images[0]}
-                                        alt={`${car.year} ${car.make} ${car.model}`}
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        alt={`${car.year} ${getMakeName(car)} ${car.model}`}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        priority={false}
+                                        loading="lazy"
+                                        placeholder="blur"
+                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                                     />
                                     {/* Secondary Image on Hover */}
                                     {car.images.length > 1 && typeof car.images[1] === 'string' && (
-                                        <img
+                                        <Image
                                             src={car.images[1]}
-                                            alt={`${car.year} ${car.make} ${car.model} Rear`}
-                                            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+                                            alt={`${car.year} ${getMakeName(car)} ${car.model} Rear`}
+                                            fill
+                                            className="object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-110"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            priority={false}
+                                            loading="lazy"
+                                            placeholder="blur"
+                                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                                         />
                                     )}
                                 </>
@@ -152,7 +184,7 @@ export function VehicleGrid({ vehicles }: VehicleGridProps) {
                             <div>
                                 <div className="mb-4">
                                     <div className="flex items-center space-x-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
-                                        <span>{car.make}</span>
+                                        <span>{getMakeName(car)}</span>
                                     </div>
                                     <h3 className="text-2xl font-heading font-bold text-white mb-1 group-hover:text-primary transition-colors">
                                         {car.model}

@@ -10,8 +10,10 @@ import { expenseSchema } from "@/lib/validations/expense";
 export async function createExpense(formData: FormData) {
     const user = await checkRole(["admin", "sales"]);
 
+    const vehicleId = formData.get("vehicleId");
+
     const rawData = {
-        vehicleId: formData.get("vehicleId"),
+        vehicleId: typeof vehicleId === "string" && vehicleId.length > 0 ? vehicleId : undefined,
         amount: formData.get("amount"),
         category: formData.get("category"),
         description: formData.get("description"),

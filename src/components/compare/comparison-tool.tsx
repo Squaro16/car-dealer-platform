@@ -1,5 +1,7 @@
 "use client";
 
+// Comparison tool that lets shoppers pick inventory vehicles and view them side by side.
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X, ArrowRight, Check } from "lucide-react";
@@ -12,11 +14,12 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import Image from "next/image";
 
 
 export interface Vehicle {
     id: string;
-    make: string;
+    make: string | { name: string };
     model: string;
     year: number;
     variant: string | null;
@@ -35,15 +38,23 @@ interface ComparisonToolProps {
 }
 
 export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
+    function getMakeName(vehicle: Vehicle): string {
+        if (typeof vehicle.make === "string") {
+            return vehicle.make;
+        }
+        return vehicle.make?.name ?? "";
+    }
+
     const [slots, setSlots] = useState<(Vehicle | null)[]>([null, null]);
     const [search, setSearch] = useState("");
     const [openSlotIndex, setOpenSlotIndex] = useState<number | null>(null);
 
     const filteredVehicles = availableVehicles.filter(v => {
         const query = search.toLowerCase();
+        const makeName = getMakeName(v).toLowerCase();
         return (
             v.status === "in_stock" &&
-            (v.make.toLowerCase().includes(query) ||
+            (makeName.includes(query) ||
                 v.model.toLowerCase().includes(query) ||
                 v.year.toString().includes(query))
         );
@@ -98,19 +109,29 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                 </div>
                                 <div className="h-48 relative bg-neutral-900">
                                     {getImg(vehicle) ? (
-                                        <img src={getImg(vehicle)!} alt={vehicle.model} className="w-full h-full object-cover" />
+                                        <Image
+                                            src={getImg(vehicle)!}
+                                            alt={vehicle.model}
+                                            fill
+                                            className="object-cover"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            priority={false}
+                                            loading="lazy"
+                                            placeholder="blur"
+                                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                                        />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-500">No Image</div>
                                     )}
                                 </div>
                                 <div className="p-4 flex-1">
-                                    <h3 className="text-xl font-bold text-white">{vehicle.year} {vehicle.make}</h3>
+                                    <h3 className="text-xl font-bold text-white">{vehicle.year} {getMakeName(vehicle)}</h3>
                                     <p className="text-lg text-primary">{vehicle.model} {vehicle.variant}</p>
                                     {/* Assuming vehicle1 and vehicle2 are available in this scope for comparison context */}
                                     {/* This comparison text would typically be generated based on the two vehicles being compared */}
                                     {/* For this edit, we'll insert it as provided, assuming the variables are defined or it's placeholder text */}
                                     <p className="text-sm text-yellow-700">
-                                        These vehicles satisfy different needs. The <strong>{vehicle.make} {vehicle.model}</strong> is likely better for performance or luxury, while the <strong>{vehicle.make} {vehicle.model}</strong> might be more practical or efficient.
+                                        These vehicles satisfy different needs. The <strong>{getMakeName(vehicle)} {vehicle.model}</strong> is likely better for performance or luxury, while the <strong>{getMakeName(vehicle)} {vehicle.model}</strong> might be more practical or efficient.
                                     </p>
                                     <p className="text-2xl font-bold text-white mt-2">${Number(vehicle.price).toLocaleString()}</p>
                                     <div className="mt-4">
@@ -152,10 +173,21 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                                     onClick={() => handleSelectVehicle(v)}
                                                 >
                                                     <div className="h-16 w-24 bg-neutral-900 rounded overflow-hidden shrink-0">
-                                                        {getImg(v) && <img src={getImg(v)!} alt={`${v.year} ${v.make} ${v.model}`} className="w-full h-full object-cover" />}
+                                                        {getImg(v) && (
+                                                            <Image
+                                                                src={getImg(v)!}
+                                                                alt={`${v.year} ${getMakeName(v)} ${v.model}`}
+                                                                fill
+                                                                className="object-cover"
+                                                                sizes="96px"
+                                                                loading="lazy"
+                                                                placeholder="blur"
+                                                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                                                            />
+                                                        )}
                                                     </div>
                                                     <div className="flex-1">
-                                                        <h4 className="font-bold text-white">{v.year} {v.make} {v.model}</h4>
+                                                        <h4 className="font-bold text-white">{v.year} {getMakeName(v)} {v.model}</h4>
                                                         <p className="text-sm text-gray-400">{v.variant} • ${Number(v.price).toLocaleString()}</p>
                                                     </div>
                                                     <Button size="icon" variant="ghost" className="shrink-0">
@@ -193,16 +225,16 @@ export function ComparisonTool({ availableVehicles }: ComparisonToolProps) {
                                 <th className="p-3 md:p-6 w-1/4 font-heading text-gray-400 font-normal">Feature</th>
                                 {slots.map((v, i) => (
                                     <th key={i} className="p-3 md:p-6 w-1/4">
-                                        {v ? <span className="font-bold text-white">{v.make} {v.model}</span> : <span className="text-gray-600 italic">Empty</span>}
+                                        {v ? <span className="font-bold text-white">{getMakeName(v)} {v.model}</span> : <span className="text-gray-600 italic">Empty</span>}
                                     </th>
                                 ))}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {[
-                                { label: "Price", key: "price", format: (v: any) => `$${Number(v).toLocaleString()}` },
+                                { label: "Price", key: "price", format: (v: string | number) => `$${Number(v).toLocaleString()}` },
                                 { label: "Year", key: "year" },
-                                { label: "Mileage", key: "mileage", format: (v: any) => `${Number(v).toLocaleString()} km` },
+                                { label: "Mileage", key: "mileage", format: (v: number | null) => v ? `${Number(v).toLocaleString()} km` : 'N/A' },
                                 { label: "Engine", key: "engineSize" },
                                 { label: "Transmission", key: "transmission", capitalize: true },
                                 { label: "Fuel Type", key: "fuelType", capitalize: true },

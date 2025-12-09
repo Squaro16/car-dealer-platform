@@ -1,5 +1,6 @@
+// Dashboard page for editing an existing vehicle with enhanced form UX.
 import { getVehicle } from "@/lib/actions/vehicles";
-import VehicleForm from "@/components/inventory/vehicle-form";
+import EnhancedVehicleForm from "@/components/inventory/enhanced-vehicle-form";
 import { notFound } from "next/navigation";
 
 interface EditVehiclePageProps {
@@ -32,7 +33,7 @@ export default async function EditVehiclePage({ params }: EditVehiclePageProps) 
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Edit Vehicle</h2>
             </div>
-            <VehicleForm initialData={formattedVehicle} />
+            <EnhancedVehicleForm initialData={formattedVehicle} />
         </div>
     );
 }

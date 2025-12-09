@@ -1,11 +1,43 @@
+/** Handles public sourcing requests with validation, captcha, and rate limits. */
 "use server";
 
 import { db } from "@/lib/db";
 import { sourcingRequests } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { enforceRateLimit } from "@/lib/security/rate-limit";
+import { verifyCaptchaToken } from "@/lib/security/captcha";
+import {
+    sourcingRequestSchema,
+    type SourcingRequestFormValues,
+} from "@/lib/validations/sourcing-request";
 
 export async function createSourcingRequest(formData: FormData) {
-    // 1. Get the dealer ID (assuming single dealer for now, or pick the first one)
+    const requestHeaders = await headers();
+    const ip =
+        requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        requestHeaders.get("x-real-ip") ??
+        "unknown";
+
+    enforceRateLimit(`sourcing:${ip}`, 60_000, 5);
+
+    const parsedData: SourcingRequestFormValues = sourcingRequestSchema.parse({
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        make: formData.get("make"),
+        model: formData.get("model"),
+        yearRange: formData.get("yearRange"),
+        budget: formData.get("budget"),
+        color: formData.get("color"),
+        transmission: formData.get("transmission"),
+        notes: formData.get("notes"),
+        captchaToken: formData.get("captchaToken") as string | null,
+    });
+
+    await verifyCaptchaToken(parsedData.captchaToken);
+
+    // 1. Get the dealer ID (single dedicated dealer)
     const dealer = await db.query.dealers.findFirst();
 
     if (!dealer) {
@@ -15,16 +47,18 @@ export async function createSourcingRequest(formData: FormData) {
     // 2. Extract data
     const rawData = {
         dealerId: dealer.id,
-        name: formData.get("name") as string,
-        email: formData.get("email") as string,
-        phone: formData.get("phone") as string,
-        make: formData.get("make") as string,
-        model: formData.get("model") as string,
-        yearRange: (formData.get("yearRange") as string) || null,
-        budget: formData.get("budget") && String(formData.get("budget")).trim() !== "" ? String(formData.get("budget")) : null,
-        color: (formData.get("color") as string) || null,
-        transmission: (formData.get("transmission") as string) === "" ? null : (formData.get("transmission") as "automatic" | "manual" | "cvt" | "dct" | null),
-        notes: (formData.get("notes") as string) || null,
+        name: parsedData.name,
+        email: parsedData.email,
+        phone: parsedData.phone,
+        make: parsedData.make,
+        model: parsedData.model,
+        yearRange: parsedData.yearRange || null,
+        budget: parsedData.budget
+            ? String(parsedData.budget)
+            : null,
+        color: parsedData.color || null,
+        transmission: parsedData.transmission || null,
+        notes: parsedData.notes || null,
         status: "new" as const,
     };
 

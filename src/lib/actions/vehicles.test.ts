@@ -1,3 +1,5 @@
+// Tests for vehicle actions to ensure auth, validation, and persistence behaviors.
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createVehicle, updateVehicle, deleteVehicle } from './vehicles';
 
@@ -32,6 +34,8 @@ vi.mock('next/navigation', () => ({
 import { db } from '@/lib/db';
 import { checkRole } from '@/lib/auth/utils';
 
+const validMakeId = '123e4567-e89b-12d3-a456-426614174000';
+
 describe('createVehicle Action', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -57,7 +61,7 @@ describe('createVehicle Action', () => {
         vi.mocked(db.insert).mockReturnValue({ values: valuesMock } as any);
 
         const formData = new FormData();
-        formData.append('make', 'Toyota');
+        formData.append('makeId', validMakeId);
         formData.append('model', 'Camry');
         formData.append('year', '2024');
         formData.append('price', '30000');
@@ -73,7 +77,7 @@ describe('createVehicle Action', () => {
         expect(checkRole).toHaveBeenCalledWith(['admin', 'sales']);
         expect(db.insert).toHaveBeenCalled();
         expect(valuesMock).toHaveBeenCalledWith(expect.objectContaining({
-            make: 'Toyota',
+            makeId: validMakeId,
             model: 'Camry',
             vin: 'TESTVIN123',
             dealerId: 'dealer1',
@@ -85,7 +89,7 @@ describe('createVehicle Action', () => {
         vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
 
         const formData = new FormData();
-        formData.append('make', 'Toyota');
+        formData.append('makeId', validMakeId);
         formData.append('model', 'Camry');
         formData.append('year', '1800'); // Invalid year (too old)
         formData.append('price', '30000');
@@ -108,7 +112,7 @@ describe('updateVehicle Action', () => {
     it('should throw if vehicle not owned by dealer', async () => {
         vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
         // Mock finding vehicle returns null (not found/owned)
-        vi.mocked(db.query.vehicles.findFirst).mockResolvedValue(null);
+        vi.mocked(db.query.vehicles.findFirst).mockResolvedValue(undefined as any);
 
         const formData = new FormData();
         // data irrelevant
@@ -123,7 +127,7 @@ describe('updateVehicle Action', () => {
         vi.mocked(db.update).mockReturnValue({ set: setMock } as any);
 
         const formData = new FormData();
-        formData.append('make', 'Honda');
+        formData.append('makeId', validMakeId);
         formData.append('model', 'Civic');
         formData.append('year', '2023');
         formData.append('price', '25000');
@@ -138,7 +142,7 @@ describe('updateVehicle Action', () => {
 
         expect(db.update).toHaveBeenCalled();
         expect(setMock).toHaveBeenCalledWith(expect.objectContaining({
-            make: 'Honda'
+            makeId: validMakeId
         }));
     });
 });

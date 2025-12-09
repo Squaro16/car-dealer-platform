@@ -1,3 +1,4 @@
+// Admin inventory table listing vehicles with quick actions.
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -11,12 +12,21 @@ import { getVehicles, deleteVehicle } from "@/lib/actions/vehicles";
 import { Plus, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { DataErrorBoundary } from "@/components/error-boundary";
+
+function getMakeName(vehicle: { make: string | { name?: string } }) {
+    if (typeof vehicle.make === "string") {
+        return vehicle.make;
+    }
+    return vehicle.make?.name ?? "";
+}
 
 export default async function InventoryPage() {
     const vehicles = await getVehicles();
 
     return (
-        <div className="space-y-8">
+        <DataErrorBoundary>
+            <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">Inventory</h2>
                 <Link href="/dashboard/inventory/new">
@@ -41,7 +51,7 @@ export default async function InventoryPage() {
                         {vehicles.data.map((vehicle) => (
                             <TableRow key={vehicle.id}>
                                 <TableCell className="font-medium">
-                                    {vehicle.year} {vehicle.make} {vehicle.model}
+                                    {vehicle.year} {getMakeName(vehicle)} {vehicle.model}
                                     <div className="text-xs text-muted-foreground">
                                         {vehicle.variant} • {vehicle.mileage?.toLocaleString() ?? 0} km
                                     </div>
@@ -75,6 +85,7 @@ export default async function InventoryPage() {
                     </TableBody>
                 </Table>
             </div>
-        </div>
+            </div>
+        </DataErrorBoundary>
     );
 }

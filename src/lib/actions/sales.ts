@@ -1,5 +1,7 @@
 "use server";
 
+// Sales actions for CRUD, listings, and data integrity updates.
+
 import { db } from "@/lib/db";
 import { sales, vehicles, leads } from "@/lib/db/schema";
 import { eq, desc, and, count } from "drizzle-orm";
@@ -98,7 +100,11 @@ export async function getSales(page: number = 1, limit: number = 10) {
         limit,
         offset,
         with: {
-            vehicle: true,
+            vehicle: {
+                with: {
+                    make: true,
+                },
+            },
             customer: true,
             seller: true,
         }

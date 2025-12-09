@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, FileText, Download, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export interface Vehicle {
     id: string;
@@ -66,10 +67,16 @@ export function SpecsList({ models }: SpecsListProps) {
                         {/* Image Header */}
                         <div className="relative h-48 overflow-hidden bg-neutral-900">
                             {Array.isArray(car.images) && car.images.length > 0 && typeof car.images[0] === 'string' ? (
-                                <img
+                                <Image
                                     src={car.images[0]}
                                     alt={`${car.year} ${car.make} ${car.model}`}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    priority={false}
+                                    loading="lazy"
+                                    placeholder="blur"
+                                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-neutral-500">

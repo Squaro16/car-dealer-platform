@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface GallerySliderProps {
     images: string[];
@@ -56,12 +57,16 @@ export function GallerySlider({ images, title }: GallerySliderProps) {
             >
                 {/* Image */}
                 <div className="w-full h-full relative cursor-pointer" onClick={() => setIsLightBoxOpen(true)}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                         src={images[selectedIndex]}
                         alt={`${title} - View ${selectedIndex + 1}`}
-                        className="w-full h-full object-cover animate-in fade-in duration-500"
+                        fill
+                        className="object-cover animate-in fade-in duration-500"
                         key={selectedIndex} // Force re-render for animation
+                        priority
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                     />
 
                     {/* Gradient Overlay for Text Visibility (Optional) */}
@@ -132,11 +137,15 @@ export function GallerySlider({ images, title }: GallerySliderProps) {
                                     : "border-transparent opacity-60 hover:opacity-100"
                             )}
                         >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={img}
                                 alt={`Thumbnail ${idx + 1}`}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="128px"
+                                loading="lazy"
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
                             />
                         </button>
                     ))}
@@ -150,12 +159,18 @@ export function GallerySlider({ images, title }: GallerySliderProps) {
                         {/* Close Button is handled by DialogPrimitive logic usually, but we can add overlay controls if needed */}
 
                         {/* Lightbox Image */}
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={images[selectedIndex]}
-                            alt={`${title} - Fullscreen View`}
-                            className="max-w-full max-h-full object-contain"
-                        />
+                        <div className="relative w-full h-full flex items-center justify-center">
+                            <Image
+                                src={images[selectedIndex]}
+                                alt={`${title} - Fullscreen View`}
+                                fill
+                                className="object-contain"
+                                sizes="95vw"
+                                priority
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+                            />
+                        </div>
 
                         {/* Lightbox Navigation */}
                         <div className="absolute inset-0 flex items-center justify-between p-4 md:p-8">

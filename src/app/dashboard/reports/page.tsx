@@ -5,6 +5,8 @@ import { ExportButton } from "@/components/reports/export-button";
 import { getSalesReport, getExpenseReport, getInventoryReport } from "@/lib/actions/reports";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+// Dashboard reports for sales, expenses, and inventory exports.
+
 export default async function ReportsPage({
     searchParams,
 }: {
@@ -23,7 +25,7 @@ export default async function ReportsPage({
     const salesExport = salesData.map(s => ({
         Date: new Date(s.saleDate).toLocaleDateString(),
         Customer: s.customer.name,
-        Vehicle: `${s.vehicle.year} ${s.vehicle.make} ${s.vehicle.model}`,
+        Vehicle: `${s.vehicle.year} ${s.vehicle.make?.name ?? ""} ${s.vehicle.model}`,
         VIN: s.vehicle.vin,
         Price: s.salePrice,
         PaymentMethod: s.paymentMethod,
@@ -35,13 +37,13 @@ export default async function ReportsPage({
         Category: e.category,
         Amount: e.amount,
         Description: e.description,
-        Vehicle: e.vehicle ? `${e.vehicle.year} ${e.vehicle.make} ${e.vehicle.model}` : "General",
+        Vehicle: e.vehicle ? `${e.vehicle.year} ${e.vehicle.make?.name ?? ""} ${e.vehicle.model}` : "General",
     }));
 
     const inventoryExport = inventoryData.map(v => ({
         StockNo: v.stockNumber,
         VIN: v.vin,
-        Vehicle: `${v.year} ${v.make} ${v.model}`,
+        Vehicle: `${v.year} ${v.make?.name ?? ""} ${v.model}`,
         Price: v.price,
         Cost: v.costPrice,
         Mileage: v.mileage,
@@ -85,7 +87,7 @@ export default async function ReportsPage({
                                         <TableRow key={sale.id}>
                                             <TableCell>{new Date(sale.saleDate).toLocaleDateString()}</TableCell>
                                             <TableCell>{sale.customer.name}</TableCell>
-                                            <TableCell>{sale.vehicle.year} {sale.vehicle.make} {sale.vehicle.model}</TableCell>
+                                            <TableCell>{sale.vehicle.year} {sale.vehicle.make?.name ?? ""} {sale.vehicle.model}</TableCell>
                                             <TableCell className="text-right">${Number(sale.salePrice).toLocaleString()}</TableCell>
                                         </TableRow>
                                     ))}
@@ -157,7 +159,7 @@ export default async function ReportsPage({
                                     {inventoryData.map((vehicle) => (
                                         <TableRow key={vehicle.id}>
                                             <TableCell>{vehicle.stockNumber || "-"}</TableCell>
-                                            <TableCell>{vehicle.year} {vehicle.make} {vehicle.model}</TableCell>
+                                            <TableCell>{vehicle.year} {vehicle.make?.name ?? ""} {vehicle.model}</TableCell>
                                             <TableCell>{Math.floor((new Date().getTime() - new Date(vehicle.createdAt).getTime()) / (1000 * 60 * 60 * 24))}</TableCell>
                                             <TableCell className="text-right">${Number(vehicle.costPrice || 0).toLocaleString()}</TableCell>
                                             <TableCell className="text-right">${Number(vehicle.price).toLocaleString()}</TableCell>

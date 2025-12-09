@@ -1,7 +1,9 @@
 "use server";
 
+// Server-side vehicle actions for inventory, including public queries with make joins.
+
 import { db } from "@/lib/db";
-import { vehicles } from "@/lib/db/schema";
+import { vehicles, makes } from "@/lib/db/schema";
 import { eq, desc, asc, and, count, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -24,6 +26,36 @@ export type GetVehiclesOptions = {
     sort?: string;
 };
 
+export interface VehicleWithMake {
+    id: string;
+    makeId: string;
+    make: string;
+    makeCountry: string | null;
+    model: string;
+    year: number;
+    price: string;
+    costPrice: string | null;
+    mileage: number | null;
+    status: "in_stock" | "reserved" | "sold" | "hidden";
+    condition: string;
+    isFeatured: boolean | null;
+    vin: string | null;
+    stockNumber: string | null;
+    color: string | null;
+    engineSize: string | null;
+    transmission: string | null;
+    fuelType: string | null;
+    doors: number | null;
+    seats: number | null;
+    bodyType: string | null;
+    variant: string | null;
+    description: string | null;
+    features: string[] | null;
+    images: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export async function getVehicles(options: GetVehiclesOptions = {}) {
     const user = await getUserProfile();
 
@@ -37,7 +69,8 @@ export async function getVehicles(options: GetVehiclesOptions = {}) {
     ];
 
     if (options.make && options.make !== "all") {
-        conditions.push(eq(vehicles.make, options.make));
+        // For filtering by make name, we need to join with makes table
+        conditions.push(eq(makes.name, options.make));
     }
 
     if (options.bodyType && options.bodyType !== "all") {
@@ -68,19 +101,49 @@ export async function getVehicles(options: GetVehiclesOptions = {}) {
         default: orderBy = desc(vehicles.createdAt);
     }
 
-    // Get total count
+    // Get total count (need to join for filtering by make name)
     const [countResult] = await db
         .select({ count: count() })
         .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
         .where(whereClause);
 
     const totalCount = countResult?.count ?? 0;
     const totalPages = Math.ceil(totalCount / limit);
 
-    // Get data
+    // Get data with make information
     const data = await db
-        .select()
+        .select({
+            id: vehicles.id,
+            makeId: vehicles.makeId,
+            make: makes.name,
+            makeCountry: makes.country,
+            model: vehicles.model,
+            year: vehicles.year,
+            price: vehicles.price,
+            costPrice: vehicles.costPrice,
+            mileage: vehicles.mileage,
+            status: vehicles.status,
+            condition: vehicles.condition,
+            isFeatured: vehicles.isFeatured,
+            vin: vehicles.vin,
+            stockNumber: vehicles.stockNumber,
+            color: vehicles.color,
+            engineSize: vehicles.engineSize,
+            transmission: vehicles.transmission,
+            fuelType: vehicles.fuelType,
+            doors: vehicles.doors,
+            seats: vehicles.seats,
+            bodyType: vehicles.bodyType,
+            variant: vehicles.variant,
+            description: vehicles.description,
+            features: vehicles.features,
+            images: vehicles.images,
+            createdAt: vehicles.createdAt,
+            updatedAt: vehicles.updatedAt,
+        })
         .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
         .where(whereClause)
         .orderBy(orderBy)
         .limit(limit)
@@ -109,7 +172,8 @@ export async function getPublicVehicles(options: GetVehiclesOptions = {}) {
     ];
 
     if (options.make && options.make !== "all") {
-        conditions.push(eq(vehicles.make, options.make));
+        // For filtering by make name, we need to join with makes table
+        conditions.push(eq(makes.name, options.make));
     }
 
     if (options.bodyType && options.bodyType !== "all") {
@@ -136,19 +200,47 @@ export async function getPublicVehicles(options: GetVehiclesOptions = {}) {
         default: orderBy = desc(vehicles.createdAt);
     }
 
-    // Get total count
+    // Get total count (need to join for filtering by make name)
     const [countResult] = await db
         .select({ count: count() })
         .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
         .where(whereClause);
 
     const totalCount = countResult?.count ?? 0;
     const totalPages = Math.ceil(totalCount / limit);
 
-    // Get data
+    // Get data with make information
     const data = await db
-        .select()
+        .select({
+            id: vehicles.id,
+            makeId: vehicles.makeId,
+            make: makes.name,
+            makeCountry: makes.country,
+            model: vehicles.model,
+            year: vehicles.year,
+            price: vehicles.price,
+            mileage: vehicles.mileage,
+            status: vehicles.status,
+            condition: vehicles.condition,
+            vin: vehicles.vin,
+            stockNumber: vehicles.stockNumber,
+            color: vehicles.color,
+            engineSize: vehicles.engineSize,
+            transmission: vehicles.transmission,
+            fuelType: vehicles.fuelType,
+            doors: vehicles.doors,
+            seats: vehicles.seats,
+            bodyType: vehicles.bodyType,
+            variant: vehicles.variant,
+            description: vehicles.description,
+            features: vehicles.features,
+            images: vehicles.images,
+            createdAt: vehicles.createdAt,
+            updatedAt: vehicles.updatedAt,
+        })
         .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
         .where(whereClause)
         .orderBy(orderBy)
         .limit(limit)
@@ -166,19 +258,69 @@ export async function getPublicVehicles(options: GetVehiclesOptions = {}) {
 }
 
 export async function getFeaturedCars() {
-    // Public function, no auth needed for now, but should probably filter by dealer if we had a public site context
-    // For now, return latest 4 from ALL dealers (or maybe just one featured dealer?)
-    // Let's assume public site shows all for now, or we need a way to know which dealer site we are on.
-    // Given the schema has 'slug' on dealers, we should probably filter by that in a real app.
-    // For this MVP template, we'll just return latest 4 global.
-    const data = await db.select().from(vehicles).orderBy(desc(vehicles.createdAt)).limit(4);
+    // Public featured cards with make data for the marketing homepage.
+    const data = await db
+        .select({
+            id: vehicles.id,
+            makeId: vehicles.makeId,
+            make: makes.name,
+            makeCountry: makes.country,
+            model: vehicles.model,
+            year: vehicles.year,
+            price: vehicles.price,
+            mileage: vehicles.mileage,
+            transmission: vehicles.transmission,
+            condition: vehicles.condition,
+            status: vehicles.status,
+            variant: vehicles.variant,
+            bodyType: vehicles.bodyType,
+            fuelType: vehicles.fuelType,
+            engineSize: vehicles.engineSize,
+            images: vehicles.images,
+        })
+        .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
+        .where(eq(vehicles.status, "in_stock"))
+        .orderBy(desc(vehicles.createdAt))
+        .limit(4);
+
     return data;
 }
 
-export async function getVehicle(id: string) {
-    // Public function
-    const data = await db.select().from(vehicles).where(eq(vehicles.id, id));
-    return data[0];
+export async function getVehicle(id: string): Promise<VehicleWithMake | undefined> {
+    // Public function - join with makes to get make name
+    const data = await db
+        .select({
+            id: vehicles.id,
+            makeId: vehicles.makeId,
+            make: makes.name,
+            makeCountry: makes.country,
+            model: vehicles.model,
+            year: vehicles.year,
+            price: vehicles.price,
+            mileage: vehicles.mileage,
+            status: vehicles.status,
+            condition: vehicles.condition,
+            vin: vehicles.vin,
+            stockNumber: vehicles.stockNumber,
+            color: vehicles.color,
+            engineSize: vehicles.engineSize,
+            transmission: vehicles.transmission,
+            fuelType: vehicles.fuelType,
+            doors: vehicles.doors,
+            seats: vehicles.seats,
+            bodyType: vehicles.bodyType,
+            variant: vehicles.variant,
+            description: vehicles.description,
+            features: vehicles.features,
+            images: vehicles.images,
+            createdAt: vehicles.createdAt,
+            updatedAt: vehicles.updatedAt,
+        })
+        .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
+        .where(eq(vehicles.id, id));
+    return data[0] as VehicleWithMake | undefined;
 }
 
 import { vehicleSchema } from "@/lib/validations/vehicle";
@@ -187,7 +329,7 @@ export async function createVehicle(formData: FormData) {
     const user = await checkRole(["admin", "sales"]);
 
     const rawData = {
-        make: formData.get("make"),
+        makeId: formData.get("makeId"),
         model: formData.get("model"),
         year: formData.get("year"),
         price: formData.get("price"),
@@ -264,7 +406,7 @@ export async function updateVehicle(id: string, formData: FormData) {
     }
 
     const rawData = {
-        make: formData.get("make"),
+        makeId: formData.get("makeId"),
         model: formData.get("model"),
         year: formData.get("year"),
         price: formData.get("price"),
@@ -306,8 +448,21 @@ export async function updateVehicle(id: string, formData: FormData) {
 export async function getUniqueModels() {
     // Return one vehicle per Make+Model+Year combination to serve as a Spec Sheet
     // Ideally we would have a dedicated Models table, but for this dealer template we infer from inventory
-    const data = await db.select().from(vehicles)
-        .where(eq(vehicles.status, 'in_stock'))
+    const data = await db
+        .select({
+            id: vehicles.id,
+            makeId: vehicles.makeId,
+            make: makes.name,
+            model: vehicles.model,
+            year: vehicles.year,
+            variant: vehicles.variant,
+            price: vehicles.price,
+            images: vehicles.images,
+            status: vehicles.status,
+        })
+        .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
+        .where(eq(vehicles.status, "in_stock"))
         .orderBy(desc(vehicles.year), desc(vehicles.price));
 
     const uniqueMap = new Map();
@@ -323,15 +478,17 @@ export async function getUniqueModels() {
 }
 
 export async function getInventoryStats() {
+    const vehicleCount = count(vehicles.id).as("count");
     const stats = await db
         .select({
-            brand: vehicles.make,
-            count: count(vehicles.id)
+            brand: makes.name,
+            count: vehicleCount
         })
         .from(vehicles)
+        .innerJoin(makes, eq(vehicles.makeId, makes.id))
         .where(eq(vehicles.status, "in_stock"))
-        .groupBy(vehicles.make)
-        .orderBy(desc(count(vehicles.id)));
+        .groupBy(makes.name)
+        .orderBy(desc(vehicleCount));
 
     return stats;
 }

@@ -35,16 +35,15 @@ test.describe('Admin Sales Flow', () => {
         await page.getByLabel('Year').fill('2024');
         await page.getByLabel('Make').fill('TestMake');
         await page.getByLabel('Model').fill(modelName);
-        await page.getByLabel('Price').fill(salePrice);
+        await page.getByLabel('Selling Price').fill(salePrice);
         await page.getByLabel('VIN').fill(vin);
         // Assuming other fields are optional or have defaults.
         // Based on vehicle-form.tsx, required fields are Year, Make, Model, Price, VIN, Type, Status, Color.
         // Wait, need to check required fields in VehicleForm if this fails.
         // Assuming defaults or just filling minimal required.
         // Checking vehicle-form.tsx...
-        // Status defaults to 'in_stock'. Type defaults?
-        // Let's fill a few more to be safe.
-        await page.getByLabel('Type').selectOption('sedan');
+        // Status defaults to 'in_stock'. Fill basic fields for consistency.
+        await page.getByLabel('Body Type').fill('Sedan');
         await page.getByLabel('Color').fill('Black');
         await page.getByLabel('Mileage').fill('0');
         await page.getByLabel('Cost Price').fill('40000');
@@ -90,11 +89,11 @@ test.describe('Admin Sales Flow', () => {
         // Sale Price
         await page.getByLabel('Sale Price').fill(salePrice);
 
-        // Date (default is today, leave it)
-
-        // Payment Method
-        await page.getByText('Select payment method', { exact: true }).click();
+        // Payment Method (default is bank_transfer, but let's ensure it's selected)
+        await page.getByText('Select payment method').click();
         await page.getByRole('option', { name: 'Bank Transfer' }).click();
+
+        // Date (default is today, leave it)
 
         // Submit
         await page.getByRole('button', { name: 'Complete Sale' }).click();

@@ -7,6 +7,8 @@ import { notFound } from "next/navigation";
 import { Printer } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+// Invoice view for a specific sale with dealer, customer, and vehicle details.
+
 export default async function InvoicePage({
     params,
 }: {
@@ -17,7 +19,11 @@ export default async function InvoicePage({
     const sale = await db.query.sales.findFirst({
         where: eq(sales.id, id),
         with: {
-            vehicle: true,
+            vehicle: {
+                with: {
+                    make: true,
+                },
+            },
             customer: true,
             dealer: true,
             seller: true,
@@ -70,7 +76,7 @@ export default async function InvoicePage({
                         </div>
                         <div className="text-right">
                             <div className="text-sm font-medium text-muted-foreground mb-2">Vehicle Details:</div>
-                            <div className="font-bold">{sale.vehicle.year} {sale.vehicle.make} {sale.vehicle.model}</div>
+                            <div className="font-bold">{sale.vehicle.year} {sale.vehicle.make?.name ?? ""} {sale.vehicle.model}</div>
                             <div className="text-sm text-muted-foreground space-y-1">
                                 <div>VIN: {sale.vehicle.vin}</div>
                                 <div>Stock #: {sale.vehicle.stockNumber}</div>

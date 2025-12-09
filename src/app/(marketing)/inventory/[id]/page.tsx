@@ -1,3 +1,4 @@
+// Public vehicle detail page for marketing site with gallery, specs, and lead capture.
 // import { Navbar } from "@/components/layout/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,7 @@ import { ImageGallery } from "@/components/inventory/image-gallery";
 import { GallerySlider } from "@/components/inventory/gallery-slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { vehicles } from "@/lib/db/schema";
-import { InferSelectModel } from "drizzle-orm";
-
-type Vehicle = InferSelectModel<typeof vehicles>;
+// Displays a public vehicle detail page with gallery, specs, and lead capture.
 
 export default async function VehicleDetailPage({
     params,
@@ -22,7 +20,8 @@ export default async function VehicleDetailPage({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const vehicle = (await getVehicle(id)) as Vehicle | undefined;
+    const vehicle = await getVehicle(id);
+    const makeName = vehicle?.make ?? "";
 
     if (!vehicle) {
         notFound();
@@ -40,7 +39,7 @@ export default async function VehicleDetailPage({
                         {/* Gallery */}
                         <GallerySlider
                             images={vehicle.images as string[] || []}
-                            title={`${String(vehicle.year)} ${String(vehicle.make)} ${String(vehicle.model)}`}
+                            title={`${String(vehicle.year)} ${makeName} ${String(vehicle.model)}`}
                         />
 
                         {/* Title Section (Moved from Hero) */}
@@ -56,7 +55,7 @@ export default async function VehicleDetailPage({
                                 )}
                             </div>
                             <h1 className="font-heading text-3xl md:text-5xl font-bold text-white uppercase tracking-tight mb-2">
-                                {String(vehicle.year)} {String(vehicle.make)} <span className="text-primary">{String(vehicle.model)}</span>
+                                {String(vehicle.year)} {makeName} <span className="text-primary">{String(vehicle.model)}</span>
                             </h1>
                             <p className="text-xl text-gray-400 font-light tracking-wide">{String(vehicle.variant || '')}</p>
                         </div>
@@ -107,12 +106,12 @@ export default async function VehicleDetailPage({
                                         ) : (
                                             <>
                                                 <p>
-                                                    Experience the epitome of automotive engineering with this {String(vehicle.year)} {String(vehicle.make)} {String(vehicle.model)}.
+                                                    Experience the epitome of automotive engineering with this {String(vehicle.year)} {makeName} {String(vehicle.model)}.
                                                     Finished in a stunning {String(vehicle.color || 'custom finish')}, this vehicle represents the perfect blend of performance and luxury.
                                                 </p>
                                                 <p className="mt-4">
                                                     Every detail has been meticulously inspected to ensure it meets our exacting standards.
-                                                    From the {String(vehicle.engineSize || 'high-performance')} powertrain to the refined interior, this {String(vehicle.make)} delivers an unforgettable driving experience.
+                                                    From the {String(vehicle.engineSize || 'high-performance')} powertrain to the refined interior, this {makeName} delivers an unforgettable driving experience.
                                                 </p>
                                             </>
                                         )}
@@ -187,7 +186,7 @@ export default async function VehicleDetailPage({
                                         <div id="lead-form" className="scroll-mt-24">
                                             <LeadForm
                                                 vehicleId={vehicle.id}
-                                                vehicleTitle={`${String(vehicle.year)} ${String(vehicle.make)} ${String(vehicle.model)}`}
+                                                vehicleTitle={`${String(vehicle.year)} ${makeName} ${String(vehicle.model)}`}
                                             />
                                         </div>
                                         <div className="text-center">

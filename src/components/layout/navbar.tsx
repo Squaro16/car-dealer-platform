@@ -17,8 +17,9 @@ export function Navbar() {
         getInventoryStats().then(setStats);
     }, []);
 
-    const topBrands = stats.slice(0, 5);
-    const moreBrands = stats.slice(5, 12);
+    const midpoint = Math.ceil(stats.length / 2);
+    const topBrands = stats.slice(0, midpoint);
+    const moreBrands = stats.slice(midpoint);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-md supports-[backdrop-filter]:bg-black/20">

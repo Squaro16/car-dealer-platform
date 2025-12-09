@@ -1,3 +1,4 @@
+// Dashboard vehicle detail page with status, pricing, and expenses.
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,13 @@ import { ArrowLeft, Edit, Gauge, Fuel, Settings, Tag } from "lucide-react";
 import { SellVehicleModal } from "@/components/sales/sell-vehicle-modal";
 import { ImageGallery } from "@/components/inventory/image-gallery";
 import { ExpensesList } from "@/components/expenses/expenses-list";
+
+function getMakeName(vehicle: { make: string | { name?: string } }) {
+    if (typeof vehicle.make === "string") {
+        return vehicle.make;
+    }
+    return vehicle.make?.name ?? "";
+}
 
 export default async function VehicleDetailsPage({
     params,
@@ -21,6 +29,8 @@ export default async function VehicleDetailsPage({
         notFound();
     }
 
+    const makeName = getMakeName(vehicle);
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -31,7 +41,7 @@ export default async function VehicleDetailsPage({
                         </Button>
                     </Link>
                     <h2 className="text-3xl font-bold tracking-tight">
-                        {vehicle.year} {vehicle.make} {vehicle.model}
+                        {vehicle.year} {makeName} {vehicle.model}
                     </h2>
                     <Badge variant={vehicle.status === "sold" ? "secondary" : "default"}>
                         {vehicle.status.replace("_", " ")}
@@ -41,7 +51,7 @@ export default async function VehicleDetailsPage({
                     {vehicle.status !== "sold" && (
                         <SellVehicleModal
                             vehicleId={vehicle.id}
-                            vehicleTitle={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                            vehicleTitle={`${vehicle.year} ${makeName} ${vehicle.model}`}
                             price={vehicle.price}
                         />
                     )}
@@ -55,7 +65,7 @@ export default async function VehicleDetailsPage({
 
             <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                    <ImageGallery images={vehicle.images as string[]} title={`${vehicle.make} ${vehicle.model}`} />
+                    <ImageGallery images={vehicle.images as string[]} title={`${makeName} ${vehicle.model}`} />
                 </div>
 
                 <div className="space-y-6">

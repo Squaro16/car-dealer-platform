@@ -29,6 +29,29 @@ vi.mock('next/cache', () => ({
     revalidatePath: vi.fn(),
 }));
 
+vi.mock('next/headers', () => ({
+    headers: vi.fn(() => ({
+        get: vi.fn(() => '127.0.0.1'),
+    })),
+}));
+
+vi.mock('@/lib/security/rate-limit', () => ({
+    enforceRateLimit: vi.fn(),
+}));
+
+vi.mock('@/lib/security/captcha', () => ({
+    verifyCaptchaToken: vi.fn(),
+}));
+
+// Helper to mock select().from().leftJoin().where() chain
+const buildSelectWithLeftJoin = (whereReturn: unknown) => {
+    const whereMock = vi.fn().mockResolvedValue(whereReturn);
+    const leftJoinMock = vi.fn(() => ({ where: whereMock }));
+    const fromMock = vi.fn(() => ({ leftJoin: leftJoinMock }));
+    const selectMock = vi.fn(() => ({ from: fromMock }));
+    return { selectMock, leftJoinMock, whereMock, fromMock };
+};
+
 import { db } from '@/lib/db';
 import { checkRole } from '@/lib/auth/utils';
 import { sendLeadNotification } from '@/lib/email';
@@ -39,33 +62,37 @@ describe('createLead Action', () => {
     });
 
     it('should throw if vehicle not found', async () => {
-        // Mock db.select returning empty array (vehicle not found)
-        const whereMock = vi.fn().mockReturnValue([]);
-        const fromMock = vi.fn().mockReturnValue({ where: whereMock });
-        vi.mocked(db.select).mockReturnValue({ from: fromMock } as any);
+        // Mock db.select + leftJoin chain returning empty array (vehicle not found)
+        const { selectMock } = buildSelectWithLeftJoin([]);
+        vi.mocked(db.select).mockImplementation(selectMock as any);
 
         const formData = new FormData();
-        formData.append('vehicleId', 'invalid-id');
+        formData.append('vehicleId', '00000000-0000-0000-0000-000000000000'); // Valid UUID that doesn't exist
+        formData.append('name', 'John Doe');
+        formData.append('email', 'john@example.com');
+        formData.append('phone', '1234567890');
+        formData.append('message', 'Interested');
+        formData.append('captchaToken', 'valid-token');
 
         await expect(createLead(formData)).rejects.toThrow('Vehicle not found');
     });
 
     it('should create lead and send email if vehicle found', async () => {
-        // Mock db.select returning vehicle
+        // Mock db.select + leftJoin chain returning vehicle
         const vehicle = { id: 'v1', dealerId: 'dealer1', make: 'Toyota', model: 'Camry', year: 2024 };
-        const whereMock = vi.fn().mockReturnValue([vehicle]);
-        const fromMock = vi.fn().mockReturnValue({ where: whereMock });
-        vi.mocked(db.select).mockReturnValue({ from: fromMock } as any);
+        const { selectMock } = buildSelectWithLeftJoin([vehicle]);
+        vi.mocked(db.select).mockImplementation(selectMock as any);
 
         // Mock db.insert
         vi.mocked(db.insert).mockReturnValue({ values: vi.fn() } as any);
 
         const formData = new FormData();
-        formData.append('vehicleId', 'v1');
+        formData.append('vehicleId', '00000000-0000-0000-0000-000000000000');
         formData.append('name', 'John Doe');
         formData.append('email', 'john@example.com');
         formData.append('phone', '1234567890');
         formData.append('message', 'Interested');
+        formData.append('captchaToken', 'valid-token');
 
         await createLead(formData);
 
@@ -84,7 +111,7 @@ describe('updateLeadStatus Action', () => {
 
     it('should throw if lead not found or unauthorized', async () => {
         vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
-        vi.mocked(db.query.leads.findFirst).mockResolvedValue(null);
+        vi.mocked(db.query.leads.findFirst).mockResolvedValue(undefined as any);
 
         await expect(updateLeadStatus('l1', 'won')).rejects.toThrow('Lead not found or unauthorized');
     });

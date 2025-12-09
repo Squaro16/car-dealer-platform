@@ -10,6 +10,26 @@ export const transmissionEnum = pgEnum("transmission", ["automatic", "manual", "
 export const fuelTypeEnum = pgEnum("fuel_type", ["petrol", "diesel", "hybrid", "electric", "plug_in_hybrid"]);
 export const conditionEnum = pgEnum("condition", ["new", "used", "reconditioned"]);
 
+// Car Makes Table
+export const makes = pgTable("makes", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull().unique(),
+    logoUrl: text("logo_url"),
+    country: text("country"),
+    foundedYear: integer("founded_year"),
+    website: text("website"),
+    isActive: boolean("is_active").default(true).notNull(),
+    displayOrder: integer("display_order").default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => {
+    return {
+        nameIdx: uniqueIndex("makes_name_idx").on(table.name),
+        activeIdx: index("makes_active_idx").on(table.isActive),
+        orderIdx: index("makes_order_idx").on(table.displayOrder),
+    };
+});
+
 // Dealers Table (Multi-tenant root)
 export const dealers = pgTable("dealers", {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -55,7 +75,7 @@ export const vehicles = pgTable("vehicles", {
     stockNumber: text("stock_number"),
 
     // Basic Info
-    make: text("make").notNull(),
+    makeId: uuid("make_id").references(() => makes.id).notNull(),
     model: text("model").notNull(),
     year: integer("year").notNull(),
     variant: text("variant"),
@@ -94,7 +114,8 @@ export const vehicles = pgTable("vehicles", {
     return {
         vehicleDealerIdIdx: index("vehicles_dealer_id_idx").on(table.dealerId),
         stockNumberIdx: index("vehicles_stock_number_idx").on(table.stockNumber),
-        makeModelIdx: index("vehicles_make_model_idx").on(table.make, table.model),
+        makeIdIdx: index("vehicles_make_id_idx").on(table.makeId),
+        makeModelIdx: index("vehicles_make_model_idx").on(table.makeId, table.model),
         createdByIdIdx: index("vehicles_created_by_id_idx").on(table.createdById),
     };
 });
@@ -129,6 +150,10 @@ export const leads = pgTable("leads", {
 });
 
 // Relations Definitions
+export const makesRelations = relations(makes, ({ many }) => ({
+    vehicles: many(vehicles),
+}));
+
 export const dealersRelations = relations(dealers, ({ many }) => ({
     users: many(users),
     vehicles: many(vehicles),
@@ -147,6 +172,10 @@ export const vehiclesRelations = relations(vehicles, ({ one, many }) => ({
     dealer: one(dealers, {
         fields: [vehicles.dealerId],
         references: [dealers.id],
+    }),
+    make: one(makes, {
+        fields: [vehicles.makeId],
+        references: [makes.id],
     }),
     leads: many(leads),
     createdBy: one(users, {

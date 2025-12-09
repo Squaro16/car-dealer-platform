@@ -65,10 +65,15 @@ export default async function Home() {
               { name: 'McLaren', logo: 'https://pngimg.com/uploads/Mclaren/Mclaren_PNG40.png', invert: true }
             ].map((brand) => (
               <div key={brand.name} className="relative h-12 w-24 md:h-16 md:w-32 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300">
-                <img
+                <Image
                   src={brand.logo}
                   alt={brand.name}
-                  className={`w-full h-full object-contain ${brand.invert ? 'brightness-0 invert' : ''}`}
+                  fill
+                  className={`object-contain ${brand.invert ? 'brightness-0 invert' : ''}`}
+                  sizes="(max-width: 768px) 96px, 128px"
+                  loading="lazy"
+                  placeholder="blur"
+                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
                 />
               </div>
             ))}

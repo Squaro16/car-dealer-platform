@@ -1,7 +1,11 @@
-import { dealers, users, vehicles, sales, leads, expenses, sourcingRequests, customers } from "./schema";
+// Seed script for local development: creates dealer, admin user, and sample data.
+
+import { dealers, users, vehicles, sales, leads, expenses, sourcingRequests, customers, makes } from "./schema";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
+
+const SHOULD_PURGE = process.env.SEED_PURGE !== "false";
 
 async function main() {
     // Dynamic import to ensure env vars are loaded first
@@ -10,18 +14,21 @@ async function main() {
     console.log("🌱 Seeding database...");
 
     try {
-        // 0. Cleanup (Optional: remove if you want to keep existing data)
-        console.log("🧹 Clearing existing data...");
-        // Clear dependent tables first
-        await db.delete(sales);
-        await db.delete(leads);
-        await db.delete(expenses);
-        await db.delete(sourcingRequests);
-        await db.delete(customers);
-        // Then clear core tables
-        await db.delete(vehicles);
-        await db.delete(users);
-        await db.delete(dealers);
+        // 0. Cleanup (skippable with SEED_PURGE=false)
+        if (SHOULD_PURGE) {
+            console.log("🧹 Clearing existing data...");
+            await db.delete(sales);
+            await db.delete(leads);
+            await db.delete(expenses);
+            await db.delete(sourcingRequests);
+            await db.delete(customers);
+            await db.delete(vehicles);
+            await db.delete(makes);
+            await db.delete(users);
+            await db.delete(dealers);
+        } else {
+            console.log("⚠️  Skipping purge (SEED_PURGE=false). Existing data will remain.");
+        }
 
         // 1. Create Dealer
         const [dealer] = await db.insert(dealers).values({
@@ -46,12 +53,54 @@ async function main() {
 
         console.log("✅ Admin user created");
 
-        // 3. Create Sample Vehicles
-        await db.insert(vehicles).values([
+        // 3. Seed Makes (minimal set used below)
+        const seededMakes = await db.insert(makes).values([
+            { name: "Lamborghini", country: "Italy" },
+            { name: "Porsche", country: "Germany" },
+            { name: "Toyota", country: "Japan" },
+            { name: "Mercedes-Benz", country: "Germany" },
+            { name: "Ferrari", country: "Italy" },
+            { name: "Rolls Royce", country: "United Kingdom" },
+            { name: "McLaren", country: "United Kingdom" },
+            { name: "Bentley", country: "United Kingdom" },
+            { name: "BMW", country: "Germany" },
+            { name: "Land Rover", country: "United Kingdom" },
+            { name: "Aston Martin", country: "United Kingdom" },
+            { name: "Audi", country: "Germany" },
+            { name: "Volkswagen", country: "Germany" },
+            { name: "Volvo", country: "Sweden" },
+            { name: "Tesla", country: "United States" },
+            { name: "Lucid", country: "United States" },
+            { name: "Ford", country: "United States" },
+            { name: "Chevrolet", country: "United States" },
+            { name: "Kia", country: "South Korea" },
+            { name: "Hyundai", country: "South Korea" },
+            { name: "Subaru", country: "Japan" },
+            { name: "Mazda", country: "Japan" },
+            { name: "Nissan", country: "Japan" },
+            { name: "Honda", country: "Japan" },
+            { name: "Jeep", country: "United States" },
+            { name: "Cadillac", country: "United States" },
+        ]).returning();
+
+        const makeIdByName = new Map<string, string>(
+            seededMakes.map((m) => [m.name, m.id])
+        );
+
+        function getMakeId(name: string) {
+            const id = makeIdByName.get(name);
+            if (!id) {
+                throw new Error(`Missing makeId for ${name}`);
+            }
+            return id;
+        }
+
+        // 4. Create Sample Vehicles
+        const vehicleSeeds = [
             // 1. Research: Lamborghini Aventador (Utama Motors)
             {
                 dealerId: dealer.id,
-                make: "Lamborghini",
+                makeName: "Lamborghini",
                 model: "Aventador",
                 year: 2019,
                 variant: "SVJ LP770-4",
@@ -76,7 +125,7 @@ async function main() {
             // 2. Research: Porsche 911 GT3 RS (Utama Motors)
             {
                 dealerId: dealer.id,
-                make: "Porsche",
+                makeName: "Porsche",
                 model: "911",
                 year: 2023,
                 variant: "GT3 RS",
@@ -101,7 +150,7 @@ async function main() {
             // 3. Toyota Alphard (MPV staple)
             {
                 dealerId: dealer.id,
-                make: "Toyota",
+                makeName: "Toyota",
                 model: "Alphard",
                 year: 2021,
                 variant: "2.5 SC Package",
@@ -126,7 +175,7 @@ async function main() {
             // 4. Mercedes-Benz E200 (Existing)
             {
                 dealerId: dealer.id,
-                make: "Mercedes-Benz",
+                makeName: "Mercedes-Benz",
                 model: "E200",
                 year: 2023,
                 variant: "AMG Line",
@@ -151,7 +200,7 @@ async function main() {
             // 5. Ferrari 488 Pista
             {
                 dealerId: dealer.id,
-                make: "Ferrari",
+                makeName: "Ferrari",
                 model: "488",
                 year: 2020,
                 variant: "Pista Spider",
@@ -176,7 +225,7 @@ async function main() {
             // 6. Rolls Royce Ghost
             {
                 dealerId: dealer.id,
-                make: "Rolls Royce",
+                makeName: "Rolls Royce",
                 model: "Ghost",
                 year: 2022,
                 variant: "Black Badge",
@@ -201,7 +250,7 @@ async function main() {
             // 7. McLaren 720S
             {
                 dealerId: dealer.id,
-                make: "McLaren",
+            makeName: "McLaren",
                 model: "720S",
                 year: 2021,
                 variant: "Performance",
@@ -226,7 +275,7 @@ async function main() {
             // 8. Bentley Continental GT
             {
                 dealerId: dealer.id,
-                make: "Bentley",
+            makeName: "Bentley",
                 model: "Continental",
                 year: 2022,
                 variant: "GT Speed",
@@ -251,7 +300,7 @@ async function main() {
             // 9. Land Rover Defender
             {
                 dealerId: dealer.id,
-                make: "Land Rover",
+            makeName: "Land Rover",
                 model: "Defender",
                 year: 2024,
                 variant: "110 V8 Carpathian Edition",
@@ -276,7 +325,7 @@ async function main() {
             // 10. BMW M4 Competition
             {
                 dealerId: dealer.id,
-                make: "BMW",
+            makeName: "BMW",
                 model: "M4",
                 year: 2023,
                 variant: "Competition xDrive",
@@ -301,7 +350,7 @@ async function main() {
             // 11. Mercedes-Benz G63 AMG
             {
                 dealerId: dealer.id,
-                make: "Mercedes-Benz",
+            makeName: "Mercedes-Benz",
                 model: "G-Class",
                 year: 2022,
                 variant: "AMG G 63",
@@ -326,7 +375,7 @@ async function main() {
             // 12. Aston Martin DBX
             {
                 dealerId: dealer.id,
-                make: "Aston Martin",
+            makeName: "Aston Martin",
                 model: "DBX",
                 year: 2021,
                 variant: "V8",
@@ -347,8 +396,366 @@ async function main() {
                 description: "Beauty and beast. The DBX brings Aston Martin soul to the SUV segment. Lightning Silver with Oxford Tan leather.",
                 engineSize: "4.0L",
                 bodyType: "SUV"
-            }
-        ]);
+        },
+        // 13. Tesla Model Y Performance
+        {
+            dealerId: dealer.id,
+            makeName: "Tesla",
+            model: "Model Y",
+            year: 2024,
+            variant: "Performance",
+            price: "89000",
+            mileage: 1500,
+            status: "in_stock",
+            condition: "new",
+            fuelType: "electric",
+            transmission: "automatic",
+            color: "White",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1619767886558-efdc259cde1b?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1619767886558-efdc259cde1b?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Dual Motor AWD", "Acceleration Boost", "Autopilot", "Premium Interior"],
+            description: "Quick, quiet, and spacious EV crossover with blistering 0-100 in 3.7s.",
+            engineSize: "Electric",
+            bodyType: "SUV"
+        },
+        // 14. Audi Q8 e-tron
+        {
+            dealerId: dealer.id,
+            makeName: "Audi",
+            model: "Q8 e-tron",
+            year: 2024,
+            variant: "55 quattro",
+            price: "168000",
+            mileage: 3200,
+            status: "in_stock",
+            condition: "new",
+            fuelType: "electric",
+            transmission: "automatic",
+            color: "Black",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Adaptive Air Suspension", "Matrix LED", "Bang & Olufsen", "360 Camera"],
+            description: "Flagship electric SUV with quattro confidence and premium comfort.",
+            engineSize: "Electric",
+            bodyType: "SUV"
+        },
+        // 15. Ford F-150 Lightning
+        {
+            dealerId: dealer.id,
+            makeName: "Ford",
+            model: "F-150",
+            year: 2023,
+            variant: "Lightning Lariat",
+            price: "118000",
+            mileage: 5200,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "electric",
+            transmission: "automatic",
+            color: "Grey",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Extended Range Battery", "BlueCruise", "Pro Power Onboard", "Tow Tech"],
+            description: "All-electric pickup with serious utility and silent torque.",
+            engineSize: "Electric",
+            bodyType: "Truck"
+        },
+        // 16. Kia EV6 GT
+        {
+            dealerId: dealer.id,
+            makeName: "Kia",
+            model: "EV6",
+            year: 2023,
+            variant: "GT",
+            price: "89000",
+            mileage: 4800,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "electric",
+            transmission: "automatic",
+            color: "Green",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Dual Motor AWD", "Drift Mode", "Augmented Reality HUD", "Meridian Audio"],
+            description: "Hot hatch energy in an EV crossover silhouette with supercar sprints.",
+            engineSize: "Electric",
+            bodyType: "Crossover"
+        },
+        // 17. Hyundai Ioniq 5
+        {
+            dealerId: dealer.id,
+            makeName: "Hyundai",
+            model: "Ioniq 5",
+            year: 2023,
+            variant: "Ultimate AWD",
+            price: "76000",
+            mileage: 6200,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "electric",
+            transmission: "automatic",
+            color: "Silver",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["800V Charging", "Vehicle-to-Load", "Relaxation Seats", "SmartSense"],
+            description: "Retro-modern EV with ultra-fast charging and lounge-like cabin.",
+            engineSize: "Electric",
+            bodyType: "Crossover"
+        },
+        // 18. Honda Civic Type R
+        {
+            dealerId: dealer.id,
+            makeName: "Honda",
+            model: "Civic",
+            year: 2024,
+            variant: "Type R",
+            price: "72000",
+            mileage: 1200,
+            status: "in_stock",
+            condition: "new",
+            fuelType: "petrol",
+            transmission: "manual",
+            color: "Red",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Rev-Match", "Brembo Brakes", "Adaptive Dampers", "Bucket Seats"],
+            description: "Track-bred hot hatch with six-speed purity and daily usability.",
+            engineSize: "2.0L",
+            bodyType: "Hatchback"
+        },
+        // 19. Nissan GT-R
+        {
+            dealerId: dealer.id,
+            makeName: "Nissan",
+            model: "GT-R",
+            year: 2021,
+            variant: "Premium",
+            price: "298000",
+            mileage: 14000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "dct",
+            color: "Grey",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["ATTESA E-TS AWD", "Launch Control", "Recaro Seats", "Bose Audio"],
+            description: "Godzilla performance with relentless grip and twin-turbo punch.",
+            engineSize: "3.8L",
+            bodyType: "Coupe"
+        },
+        // 20. Mazda CX-5
+        {
+            dealerId: dealer.id,
+            makeName: "Mazda",
+            model: "CX-5",
+            year: 2022,
+            variant: "Signature",
+            price: "54000",
+            mileage: 18000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "automatic",
+            color: "Blue",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Nappa Leather", "HUD", "Adaptive Cruise", "360 Camera"],
+            description: "Refined crossover with premium feel and engaging dynamics.",
+            engineSize: "2.5L",
+            bodyType: "SUV"
+        },
+        // 21. Subaru Forester
+        {
+            dealerId: dealer.id,
+            makeName: "Subaru",
+            model: "Forester",
+            year: 2022,
+            variant: "2.0i-S EyeSight",
+            price: "52000",
+            mileage: 22000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "cvt",
+            color: "Green",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Symmetrical AWD", "X-Mode", "EyeSight", "Panoramic Roof"],
+            description: "All-weather SUV with safety tech and practical space.",
+            engineSize: "2.0L",
+            bodyType: "SUV"
+        },
+        // 22. Volkswagen Golf GTI
+        {
+            dealerId: dealer.id,
+            makeName: "Volkswagen",
+            model: "Golf",
+            year: 2023,
+            variant: "GTI",
+            price: "61000",
+            mileage: 9000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "manual",
+            color: "White",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["VAQ LSD", "IQ.Light", "Digital Cockpit", "Driving Mode Select"],
+            description: "Iconic hot hatch balancing fun, efficiency, and practicality.",
+            engineSize: "2.0L",
+            bodyType: "Hatchback"
+        },
+        // 23. Volvo XC90 Recharge
+        {
+            dealerId: dealer.id,
+            makeName: "Volvo",
+            model: "XC90",
+            year: 2023,
+            variant: "Recharge T8",
+            price: "168000",
+            mileage: 7000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "plug_in_hybrid",
+            transmission: "automatic",
+            color: "Grey",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Air Suspension", "Pilot Assist", "Bowers & Wilkins", "7 Seats"],
+            description: "Luxury 7-seater PHEV with serene ride and strong efficiency.",
+            engineSize: "2.0L",
+            bodyType: "SUV"
+        },
+        // 24. Chevrolet Corvette Stingray
+        {
+            dealerId: dealer.id,
+            makeName: "Chevrolet",
+            model: "Corvette",
+            year: 2022,
+            variant: "C8 3LT",
+            price: "198000",
+            mileage: 8500,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "dct",
+            color: "Red",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Z51 Package", "Magnetic Ride", "Performance Exhaust", "Front Lift"],
+            description: "Mid-engine American icon with exotic looks and everyday manners.",
+            engineSize: "6.2L",
+            bodyType: "Coupe"
+        },
+        // 25. Jeep Wrangler Rubicon
+        {
+            dealerId: dealer.id,
+            makeName: "Jeep",
+            model: "Wrangler",
+            year: 2021,
+            variant: "Rubicon 4-door",
+            price: "115000",
+            mileage: 26000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "automatic",
+            color: "Orange",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["Rock-Trac 4x4", "Front/Rear Lockers", "Fox Shocks", "Steel Bumpers"],
+            description: "Trail-ready legend built for rock crawling and open-air adventure.",
+            engineSize: "3.6L",
+            bodyType: "SUV"
+        },
+        // 26. Cadillac Escalade
+        {
+            dealerId: dealer.id,
+            makeName: "Cadillac",
+            model: "Escalade",
+            year: 2022,
+            variant: "Sport Platinum",
+            price: "225000",
+            mileage: 15000,
+            status: "in_stock",
+            condition: "used",
+            fuelType: "petrol",
+            transmission: "automatic",
+            color: "Black",
+            createdById: admin.id,
+            images: [
+                "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?q=80&w=2670&auto=format&fit=crop",
+            ],
+            features: ["AKG Studio Reference", "Super Cruise", "Air Ride", "OLED Dash"],
+            description: "Full-size luxury SUV with tech-laden cabin and commanding presence.",
+            engineSize: "6.2L",
+            bodyType: "SUV"
+        }
+        ] satisfies Array<{
+            dealerId: string;
+            makeName: string;
+            model: string;
+            year: number;
+            variant?: string;
+            price: string;
+            mileage: number;
+            status: "in_stock" | "reserved" | "sold" | "hidden";
+            condition: "new" | "used" | "reconditioned";
+            fuelType: "petrol" | "diesel" | "hybrid" | "electric" | "plug_in_hybrid";
+            transmission: "automatic" | "manual" | "cvt" | "dct";
+            color?: string;
+            createdById?: string;
+            images: string[];
+            features?: string[];
+            description?: string;
+            engineSize?: string;
+            bodyType?: string;
+        }>;
+
+        await db.insert(vehicles).values(
+            vehicleSeeds.map(({ makeName, ...rest }) => ({
+                ...rest,
+                makeId: getMakeId(makeName),
+            }))
+        );
 
         console.log("✅ Sample vehicles created");
 

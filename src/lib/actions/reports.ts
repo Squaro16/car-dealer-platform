@@ -1,5 +1,7 @@
 "use server";
 
+// Provides server-side report data for sales, expenses, and inventory.
+
 import { db } from "@/lib/db";
 import { sales, expenses, vehicles } from "@/lib/db/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
@@ -16,7 +18,11 @@ export async function getSalesReport(startDate: Date, endDate: Date) {
         ),
         with: {
             customer: true,
-            vehicle: true,
+            vehicle: {
+                with: {
+                    make: true,
+                },
+            },
             seller: true,
         },
         orderBy: [desc(sales.saleDate)],
@@ -35,7 +41,11 @@ export async function getExpenseReport(startDate: Date, endDate: Date) {
             lte(expenses.date, endDate)
         ),
         with: {
-            vehicle: true,
+            vehicle: {
+                with: {
+                    make: true,
+                },
+            },
         },
         orderBy: [desc(expenses.date)],
     });
@@ -51,6 +61,9 @@ export async function getInventoryReport() {
             eq(vehicles.dealerId, user.dealerId),
             eq(vehicles.status, "in_stock")
         ),
+        with: {
+            make: true,
+        },
         orderBy: [desc(vehicles.createdAt)],
     });
 
