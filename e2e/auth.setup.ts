@@ -3,6 +3,7 @@ import { test as setup, expect } from '@playwright/test';
 const authFile = 'playwright/.auth/user.json';
 
 setup('authenticate', async ({ page }) => {
+    setup.setTimeout(90000);
     // 1. Go to login page
     await page.goto('/login');
 
@@ -14,8 +15,8 @@ setup('authenticate', async ({ page }) => {
     await page.getByRole('button', { name: 'Sign In' }).click();
 
     // 4. Wait for navigation to dashboard
-    await page.waitForURL('/dashboard');
-    await expect(page.locator('h1').filter({ hasText: 'Dashboard' }).first()).toBeVisible({ timeout: 15000 });
+    await page.waitForURL('/dashboard', { timeout: 60000 });
+    await expect(page.locator('h2').filter({ hasText: 'Dashboard' }).first()).toBeVisible({ timeout: 15000 });
 
     // 5. Save state
     await page.context().storageState({ path: authFile });

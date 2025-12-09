@@ -1,12 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createVehicle } from './vehicles';
+import { createVehicle, updateVehicle, deleteVehicle } from './vehicles';
 
 // Mock dependencies
 vi.mock('@/lib/db', () => ({
     db: {
-        insert: vi.fn(() => ({
-            values: vi.fn(),
-        })),
+        insert: vi.fn(() => ({ values: vi.fn() })),
+        delete: vi.fn(() => ({ where: vi.fn() })),
+        update: vi.fn(() => ({ set: vi.fn(() => ({ where: vi.fn() })) })),
+        select: vi.fn(() => ({ from: vi.fn(() => ({ where: vi.fn() })) })),
+        query: {
+            vehicles: {
+                findFirst: vi.fn()
+            }
+        }
     },
 }));
 
@@ -91,5 +97,67 @@ describe('createVehicle Action', () => {
         // Zod schema should reject this
         await expect(createVehicle(formData)).rejects.toThrow();
         expect(db.insert).not.toHaveBeenCalled();
+    });
+});
+
+describe('updateVehicle Action', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('should throw if vehicle not owned by dealer', async () => {
+        vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
+        // Mock finding vehicle returns null (not found/owned)
+        vi.mocked(db.query.vehicles.findFirst).mockResolvedValue(null);
+
+        const formData = new FormData();
+        // data irrelevant
+        await expect(updateVehicle('v1', formData)).rejects.toThrow('Vehicle not found or unauthorized');
+    });
+
+    it('should update vehicle if authorized', async () => {
+        vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
+        vi.mocked(db.query.vehicles.findFirst).mockResolvedValue({ id: 'v1', dealerId: 'dealer1' } as any);
+
+        const setMock = vi.fn().mockReturnValue({ where: vi.fn() });
+        vi.mocked(db.update).mockReturnValue({ set: setMock } as any);
+
+        const formData = new FormData();
+        formData.append('make', 'Honda');
+        formData.append('model', 'Civic');
+        formData.append('year', '2023');
+        formData.append('price', '25000');
+        formData.append('mileage', '500');
+        formData.append('status', 'in_stock');
+        formData.append('condition', 'used');
+        formData.append('vin', 'UPDATEDVIN');
+        formData.append('features', '[]');
+        formData.append('images', '[]');
+
+        await updateVehicle('v1', formData);
+
+        expect(db.update).toHaveBeenCalled();
+        expect(setMock).toHaveBeenCalledWith(expect.objectContaining({
+            make: 'Honda'
+        }));
+    });
+});
+
+describe('deleteVehicle Action', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('should delete vehicle if authorized', async () => {
+        vi.mocked(checkRole).mockResolvedValue({ id: 'user1', dealerId: 'dealer1' } as any);
+
+        // Mock select to find the vehicle first for ownership check
+        const whereMock = vi.fn().mockReturnValue([{ id: 'v1', dealerId: 'dealer1', images: [] }]);
+        const fromMock = vi.fn().mockReturnValue({ where: whereMock });
+        vi.mocked(db.select).mockReturnValue({ from: fromMock } as any);
+
+        await deleteVehicle('v1');
+
+        expect(db.delete).toHaveBeenCalled();
     });
 });

@@ -11,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 import { createVehicle, updateVehicle } from "@/lib/actions/vehicles";
 import { useState } from "react";
 import { ImageUpload } from "@/components/inventory/image-upload";
@@ -47,6 +48,7 @@ interface VehicleFormProps {
 export default function VehicleForm({ initialData }: VehicleFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [images, setImages] = useState<string[]>(initialData?.images || []);
+    const router = useRouter();
 
     async function onSubmit(formData: FormData) {
         setIsLoading(true);
@@ -66,9 +68,13 @@ export default function VehicleForm({ initialData }: VehicleFormProps) {
             if (initialData) {
                 await updateVehicle(initialData.id, formData);
                 toast.success("Vehicle updated successfully");
+                router.push("/dashboard/inventory");
+                router.refresh();
             } else {
                 await createVehicle(formData);
                 toast.success("Vehicle created successfully");
+                router.push("/dashboard/inventory");
+                router.refresh();
             }
         } catch (error) {
             console.error(error);

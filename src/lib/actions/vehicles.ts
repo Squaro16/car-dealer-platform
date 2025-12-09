@@ -221,7 +221,7 @@ export async function createVehicle(formData: FormData) {
     });
 
     revalidatePath("/dashboard/inventory");
-    redirect("/dashboard/inventory");
+    // redirect removed to allow client-side handling
 }
 
 export async function deleteVehicle(id: string) {
@@ -300,7 +300,7 @@ export async function updateVehicle(id: string, formData: FormData) {
     revalidatePath("/dashboard/inventory");
     revalidatePath(`/dashboard/inventory/${id}`);
     revalidatePath(`/inventory/${id}`);
-    redirect("/dashboard/inventory");
+    // redirect removed to allow client-side handling
 }
 
 export async function getUniqueModels() {

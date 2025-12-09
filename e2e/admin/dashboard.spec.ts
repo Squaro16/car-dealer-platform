@@ -5,7 +5,7 @@ test.describe('Admin Dashboard', () => {
         await page.goto('/dashboard');
 
         // Check for main heading
-        await expect(page.locator('h1').filter({ hasText: 'Dashboard' })).toBeVisible();
+        await expect(page.locator('h2').filter({ hasText: 'Dashboard' })).toBeVisible();
 
         // Check for sidebar logo (verifying branding change)
         await expect(page.getByAltText('LS Motor')).toBeVisible();
